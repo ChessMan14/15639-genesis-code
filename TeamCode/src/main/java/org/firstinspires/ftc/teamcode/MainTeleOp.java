@@ -29,50 +29,67 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+//This decorator puts this opmode into selected the name and group on the driver hub menu
 @TeleOp(name="Main TeleOp", group="Linear OpMode")
+//Since java is weird, this is essentially the equivalent of a main method in C, but instead it's a class. Also, we "extend" this class from the library class LinearOpMode which makes this into a proper teleop opmode
 public class MainTeleOp extends LinearOpMode {
 
-    // Declare OpMode members for each of the 4 motors.
+    //Create the variables for the motors and initializes a variable that keeps track of how long the opmode has been running
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor front_left_motor = null;
     private DcMotor back_left_motor = null;
     private DcMotor front_right_motor = null;
     private DcMotor back_right_motor = null;
 
+    //We have to override this function since it has already been defined in the parent class LinearOpMode
     @Override
     public void runOpMode() {
+        //Map the actual physical motors to the variables. The "device_name" variable is set in the driver hub configuration
         front_left_motor = hardwareMap.get(DcMotor.class, "front_left_motor");
         back_left_motor = hardwareMap.get(DcMotor.class, "back_left_motor");
         front_right_motor = hardwareMap.get(DcMotor.class, "front_right_motor");
         back_right_motor = hardwareMap.get(DcMotor.class, "back_right_motor");
 
+        //Set direction of motors
         front_left_motor.setDirection(DcMotor.Direction.REVERSE);
         back_left_motor.setDirection(DcMotor.Direction.REVERSE);
         front_right_motor.setDirection(DcMotor.Direction.FORWARD);
         back_right_motor.setDirection(DcMotor.Direction.FORWARD);
 
+        //This data is displayed on the driver hub console
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
+        //Wait until the the start button is pressed on the driver hub
         waitForStart();
+
+        //Reset runtime var
         runtime.reset();
 
+        //Main loop. This runs until stop is pressed on the driver hub
         while (opModeIsActive()) {
             double max;
 
+            //Vertical movement (up is negative on the joystick)
             double axial = -gamepad1.left_stick_y;
+            //Horizontal movement
             double lateral = gamepad1.left_stick_x;
+            //Rotation
+            //TODO Make this use triggers instead of joystick
             double yaw = gamepad1.right_stick_x;
 
+            //Calculate how much power to send to each wheel based on vertical/horizontal movement and rotation
             double front_left_power = axial + lateral + yaw;
             double front_right_power = axial - lateral - yaw;
             double back_left_power = axial - lateral + yaw;
             double back_right_power = axial + lateral - yaw;
 
+            //Find the maximum power being applied to a single wheel
             max = Math.max(Math.abs(front_left_power), Math.abs(front_right_power));
             max = Math.max(max, Math.abs(back_left_power));
             max = Math.max(max, Math.abs(back_right_power));
 
+            //If power > 100%, scale down all the power variables.
             if (max > 1.0) {
                 front_left_power  /= max;
                 front_right_power /= max;
@@ -80,11 +97,13 @@ public class MainTeleOp extends LinearOpMode {
                 back_right_power  /= max;
             }
 
+            //Send power to the motors
             front_left_motor.setPower(front_left_power);
             front_right_motor.setPower(front_right_power);
             back_left_motor.setPower(back_left_power);
             back_right_motor.setPower(back_right_power);
 
+            //Display data on driver hub
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", front_left_power, front_right_power);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", back_left_power, back_right_power);
