@@ -68,14 +68,18 @@ public class MainTeleOp extends LinearOpMode {
 
         //Main loop. This runs until stop is pressed on the driver hub
         while (opModeIsActive()) {
+            //Hold the maximum power being applied to a single wheel
             double max;
+
+            //Constant variable for rotation speed
+            final double rotate_fact = 1;
 
             //Vertical movement (up is negative on the joystick)
             double axial = -gamepad1.left_stick_y;
             //Horizontal movement
             double lateral = gamepad1.left_stick_x;
             //Rotation
-            double yaw = -gamepad1.left_trigger + gamepad1.right_trigger;
+            double yaw = rotate_fact*(-gamepad1.left_trigger + gamepad1.right_trigger);
 
             //Calculate how much power to send to each wheel based on vertical/horizontal movement and rotation
             double front_left_power = axial + lateral + yaw;
