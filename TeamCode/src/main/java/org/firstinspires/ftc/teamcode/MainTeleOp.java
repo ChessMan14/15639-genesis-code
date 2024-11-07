@@ -75,8 +75,7 @@ public class MainTeleOp extends LinearOpMode {
             //Horizontal movement
             double lateral = gamepad1.left_stick_x;
             //Rotation
-            //TODO Make this use triggers instead of joystick
-            double yaw = gamepad1.right_stick_x;
+            double yaw = -gamepad1.left_trigger + gamepad1.right_trigger;
 
             //Calculate how much power to send to each wheel based on vertical/horizontal movement and rotation
             double front_left_power = axial + lateral + yaw;
