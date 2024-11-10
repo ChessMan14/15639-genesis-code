@@ -67,6 +67,7 @@ public class ForwardCalibration extends LinearOpMode {
         //Try to move forward 50cm and record the time spent moving
         double time_moved = autoMover.move_forward(movement_distance);
 
+        //Add telemetry data
         telemetry.addData("Time spent moving: ", time_moved);
         telemetry.update();
     }

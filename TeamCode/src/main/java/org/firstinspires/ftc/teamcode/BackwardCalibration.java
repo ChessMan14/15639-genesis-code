@@ -67,6 +67,7 @@ public class BackwardCalibration extends LinearOpMode {
         //Try to move forward 50cm and record the time spent moving
         double time_moved = autoMover.move_backward(movement_distance);
 
+        //Add telemetry data
         telemetry.addData("Time spent moving: ", time_moved);
         telemetry.update();
     }

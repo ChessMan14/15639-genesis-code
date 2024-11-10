@@ -67,6 +67,7 @@ public class RotationCalibration extends LinearOpMode {
         //Try to move forward 50cm and record the time spent moving
         double time_rotated = autoMover.rotate(rotation_degrees);
 
+        //Add telemetry data
         telemetry.addData("Time spent rotating: ", time_rotated);
         telemetry.update();
     }
