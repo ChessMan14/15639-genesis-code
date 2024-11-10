@@ -41,6 +41,9 @@ public class MainTeleOp extends LinearOpMode {
     private DcMotor front_right_motor = null;
     private DcMotor back_right_motor = null;
 
+    //Global speed percentage for all movement
+    private final double speed_coefficient = 1;
+
     //We have to override this function since it has already been defined in the parent class LinearOpMode
     @Override
     public void runOpMode() {
@@ -101,10 +104,10 @@ public class MainTeleOp extends LinearOpMode {
             }
 
             //Send power to the motors
-            front_left_motor.setPower(front_left_power);
-            front_right_motor.setPower(front_right_power);
-            back_left_motor.setPower(back_left_power);
-            back_right_motor.setPower(back_right_power);
+            front_left_motor.setPower(front_left_power*speed_coefficient);
+            front_right_motor.setPower(front_right_power*speed_coefficient);
+            back_left_motor.setPower(back_left_power*speed_coefficient);
+            back_right_motor.setPower(back_right_power*speed_coefficient);
 
             //Display data on driver hub
             telemetry.addData("Status", "Run Time: " + runtime.toString());

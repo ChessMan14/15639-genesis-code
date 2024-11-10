@@ -14,16 +14,19 @@ public class AutoMover {
     private DcMotor front_right_motor = null;
     private DcMotor back_right_motor = null;
 
+    //These variables can be manually adjusted if certain engines are slightly more powerful than others
     private final double front_left_motor_coefficient = 1;
     private final double back_left_motor_coefficient = 1;
     private final double front_right_motor_coefficient = 1;
     private final double back_right_motor_coefficient = 1;
 
+    //You multiply the distance you want to move (or degrees you want to rotate) by these values to get a time in seconds you have to let the engines run for
     private final double forward_distance_time_conv_fact = 1;
     private final double backward_distance_time_conv_fact = 1;
     private final double rotation_time_conv_fact = 1;
 
-    private final double global_speed_val = 0.1;
+    //Global speed percentage for all movement
+    private final double speed_coefficient = 0.1;
 
     public AutoMover(DcMotor front_left_motor, DcMotor back_left_motor, DcMotor front_right_motor, DcMotor back_right_motor) {
         this.front_left_motor = front_left_motor;
@@ -46,10 +49,10 @@ public class AutoMover {
         double start = runtime.seconds();
 
         //Send power to engines
-        front_left_motor.setPower(front_left_motor_coefficient*global_speed_val);
-        front_right_motor.setPower(front_right_motor_coefficient*global_speed_val);
-        back_left_motor.setPower(back_left_motor_coefficient*global_speed_val);
-        back_right_motor.setPower(back_right_motor_coefficient*global_speed_val);
+        front_left_motor.setPower(front_left_motor_coefficient* speed_coefficient);
+        front_right_motor.setPower(front_right_motor_coefficient* speed_coefficient);
+        back_left_motor.setPower(back_left_motor_coefficient* speed_coefficient);
+        back_right_motor.setPower(back_right_motor_coefficient* speed_coefficient);
 
         //Wait until done run time expired
         while (runtime.seconds() > (start + running_time)) {
@@ -72,10 +75,10 @@ public class AutoMover {
 
         //Send power to engines
         //Note the negative signs
-        front_left_motor.setPower(-front_left_motor_coefficient*global_speed_val);
-        front_right_motor.setPower(-front_right_motor_coefficient*global_speed_val);
-        back_left_motor.setPower(-back_left_motor_coefficient*global_speed_val);
-        back_right_motor.setPower(-back_right_motor_coefficient*global_speed_val);
+        front_left_motor.setPower(-front_left_motor_coefficient* speed_coefficient);
+        front_right_motor.setPower(-front_right_motor_coefficient* speed_coefficient);
+        back_left_motor.setPower(-back_left_motor_coefficient* speed_coefficient);
+        back_right_motor.setPower(-back_right_motor_coefficient* speed_coefficient);
 
         //Wait until done run time expired
         while (runtime.seconds() > (start + running_time)) {
@@ -89,20 +92,18 @@ public class AutoMover {
         back_right_motor.setPower(0);
     }
 
-    //TODO Do this
     //0 degrees is directly forward. To the left is negative
     public void rotate(double degrees) {
-        /*
         double running_time = abs(degrees)*rotation_time_conv_fact;
 
         //Get current time in seconds
         double start = runtime.seconds();
 
-        //Send power to engines
-        front_left_motor.setPower(front_left_motor_coefficient*global_speed_val);
-        front_right_motor.setPower(front_right_motor_coefficient*global_speed_val);
-        back_left_motor.setPower(back_left_motor_coefficient*global_speed_val);
-        back_right_motor.setPower(back_right_motor_coefficient*global_speed_val);
+        //Send power to engines. Note the sign changes
+        front_left_motor.setPower(front_left_motor_coefficient*speed_coefficient);
+        front_right_motor.setPower(-front_right_motor_coefficient*speed_coefficient);
+        back_left_motor.setPower(back_left_motor_coefficient*speed_coefficient);
+        back_right_motor.setPower(-back_right_motor_coefficient*speed_coefficient);
 
         //Wait until done run time expired
         while (runtime.seconds() > (start + running_time)) {
@@ -114,6 +115,5 @@ public class AutoMover {
         front_right_motor.setPower(0);
         back_left_motor.setPower(0);
         back_right_motor.setPower(0);
-        */
     }
 }
