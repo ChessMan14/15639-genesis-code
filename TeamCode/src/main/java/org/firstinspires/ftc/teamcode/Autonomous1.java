@@ -29,8 +29,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="Forward Calibration", group="Robot")
-public class BackwardCalibration extends LinearOpMode {
+import org.firstinspires.ftc.robotcore.external.navigation.Rotation;
+
+@Autonomous(name="Autonomous 1", group="Robot")
+public class Autonomous1 extends LinearOpMode {
 
     //Create the variables for the motors and initializes a variable that keeps track of how long the opmode has been running
     private ElapsedTime runtime = new ElapsedTime();
@@ -39,12 +41,10 @@ public class BackwardCalibration extends LinearOpMode {
     private DcMotor front_right_motor = null;
     private DcMotor back_right_motor = null;
 
-    //How far the robot is going to try to move. Adjust this when trying to make the movement fit in the measuring tape
-    public final double movement_distance = 50;
-
     //We have to override this function since it has already been defined in the parent class LinearOpMode
     @Override
-    public void runOpMode() {
+    //Throws condition is there for the later wait() command; shouldn't ever be an error though
+    public void runOpMode() throws InterruptedException {
         //Map the actual physical motors to the variables. The "device_name" variable is set in the driver hub configuration
         front_left_motor = hardwareMap.get(DcMotor.class, "front_left_motor");
         back_left_motor = hardwareMap.get(DcMotor.class, "back_left_motor");
@@ -64,11 +64,17 @@ public class BackwardCalibration extends LinearOpMode {
         //Initialize AutoMover
         AutoMover autoMover = new AutoMover(front_left_motor, back_left_motor, front_right_motor, back_right_motor);
 
-        //Try to move forward 50cm and record the time spent moving
-        double time_moved = autoMover.move_backward(movement_distance);
+        //The rest of the code makes the robot move
 
-        //Add telemetry data
-        telemetry.addData("Time spent moving: ", time_moved);
-        telemetry.update();
+        wait(15);
+
+        //Robot needs to move forward a bit so that it has space to rotate (cm)
+        autoMover.move_forward(5);
+        //(left/counterclockwise is negative)
+        autoMover.rotate(-90);
+        autoMover.move_forward(240);
+        autoMover.move_backward(240);
+        autoMover.rotate(90);
+
     }
 }

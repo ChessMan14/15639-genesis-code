@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2024 ChessMan14
+Copyright (c) 2024 ChessMan14, angeldescended
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ public class ForwardCalibration extends LinearOpMode {
     private DcMotor back_right_motor = null;
 
     //How far the robot is going to try to move. Adjust this when trying to make the movement fit in the measuring tape
-    private final double movement_distance = 50;
+    public final double movement_distance = 50;
 
     //We have to override this function since it has already been defined in the parent class LinearOpMode
     @Override

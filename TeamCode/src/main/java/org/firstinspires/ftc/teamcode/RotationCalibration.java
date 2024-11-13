@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2024 ChessMan14
+Copyright (c) 2024 ChessMan14, angeldescended
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -39,8 +39,8 @@ public class RotationCalibration extends LinearOpMode {
     private DcMotor front_right_motor = null;
     private DcMotor back_right_motor = null;
 
-    //How far the robot is going to try to move. Adjust this when trying to make the movement fit in the measuring tape
-    private final double rotation_degrees = 45;
+    //How far the robot is going to try to rotate. Adjust this when trying to make the rotation fit in the measuring tape
+    public final double rotation_degrees = 45;
 
     //We have to override this function since it has already been defined in the parent class LinearOpMode
     @Override
@@ -64,7 +64,7 @@ public class RotationCalibration extends LinearOpMode {
         //Initialize AutoMover
         AutoMover autoMover = new AutoMover(front_left_motor, back_left_motor, front_right_motor, back_right_motor);
 
-        //Try to move forward 50cm and record the time spent moving
+        //Try to rotate 45 degrees and record the time spent rotating
         double time_rotated = autoMover.rotate(rotation_degrees);
 
         //Add telemetry data
