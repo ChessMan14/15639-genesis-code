@@ -27,6 +27,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 //This decorator puts this opmode into selected the name and group on the driver hub menu
@@ -34,19 +35,34 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 //Since java is weird, this is essentially the equivalent of a main method in C, but instead it's a class. Also, we "extend" this class from the library class LinearOpMode which makes this into a proper teleop opmode
 public class MainTeleOp extends LinearOpMode {
 
-    //Create the variables for the motors and initializes a variable that keeps track of how long the opmode has been running
+    //Create the variables for the motors and servos and initializes a variable that keeps track of how long the opmode has been running
     private ElapsedTime runtime = new ElapsedTime();
+
     private DcMotor front_left_motor = null;
     private DcMotor back_left_motor = null;
     private DcMotor front_right_motor = null;
     private DcMotor back_right_motor = null;
 
-    //Global speed percentage for all movement
-    private final double speed_coefficient = 1;
+    private DcMotor slide_motor = null;
+    private DcMotor arm_motor = null;
+
+    private Servo slide_servo = null;
+    private Servo arm_servo = null;
+
+    //Global speed percentage for all wheel movement
+    private final double wheel_speed_coefficient = 0.5;
+
+    //Speed percentage for slide
+    private final double slide_speed_coefficient = 0.1;
+
+    //Speed percentage for arm
+    private final double arm_speed_coefficient = 0.1;
 
     //We have to override this function since it has already been defined in the parent class LinearOpMode
     @Override
     public void runOpMode() {
+        //Wheel motors
+
         //Map the actual physical motors to the variables. The "device_name" variable is set in the driver hub configuration
         front_left_motor = hardwareMap.get(DcMotor.class, "front_left_motor");
         back_left_motor = hardwareMap.get(DcMotor.class, "back_left_motor");
@@ -58,6 +74,25 @@ public class MainTeleOp extends LinearOpMode {
         back_left_motor.setDirection(DcMotor.Direction.REVERSE);
         front_right_motor.setDirection(DcMotor.Direction.FORWARD);
         back_right_motor.setDirection(DcMotor.Direction.FORWARD);
+
+        //Arm motors and servos
+
+        //Map the actual physical motors to the variables. The "device_name" variable is set in the driver hub configuration
+        slide_motor = hardwareMap.get(DcMotor.class, "slide_motor");
+        arm_motor = hardwareMap.get(DcMotor.class, "arm_motor");
+
+        slide_servo = hardwareMap.get(Servo.class, "slide_servo");
+        arm_servo = hardwareMap.get(Servo.class, "arm_servo");
+
+        //TODO Fix all these directions
+
+        //Set direction of motors
+        slide_motor.setDirection(DcMotor.Direction.FORWARD);
+        arm_motor.setDirection(DcMotor.Direction.FORWARD);
+
+        //Set direction of servos
+        arm_servo.setDirection(Servo.Direction.FORWARD);
+        arm_servo.setDirection(Servo.Direction.FORWARD);
 
         //This data is displayed on the driver hub console
         telemetry.addData("Status", "Initialized");
@@ -71,6 +106,8 @@ public class MainTeleOp extends LinearOpMode {
 
         //Main loop. This runs until stop is pressed on the driver hub
         while (opModeIsActive()) {
+            //Movement
+
             //Hold the maximum power being applied to a single wheel
             double max;
 
@@ -97,17 +134,42 @@ public class MainTeleOp extends LinearOpMode {
 
             //If power > 100%, scale down all the power variables.
             if (max > 1.0) {
-                front_left_power  /= max;
+                front_left_power /= max;
                 front_right_power /= max;
-                back_left_power   /= max;
-                back_right_power  /= max;
+                back_left_power /= max;
+                back_right_power /= max;
             }
 
             //Send power to the motors
-            front_left_motor.setPower(front_left_power*speed_coefficient);
-            front_right_motor.setPower(front_right_power*speed_coefficient);
-            back_left_motor.setPower(back_left_power*speed_coefficient);
-            back_right_motor.setPower(back_right_power*speed_coefficient);
+            front_left_motor.setPower(front_left_power*wheel_speed_coefficient);
+            front_right_motor.setPower(front_right_power*wheel_speed_coefficient);
+            back_left_motor.setPower(back_left_power*wheel_speed_coefficient);
+            back_right_motor.setPower(back_right_power*wheel_speed_coefficient);
+
+            //Arm control
+
+            //Java is stupid so this is ugly. slide_power will get 1 if y is pressed, -1 if a is pressed, and 0 if both or neither are pressed
+            int slide_power = (gamepad2.y ? 1 : 0) - (gamepad2.a ? 1 : 0);
+
+            //Triggers used so that the driver can move the arm slower if they want
+            double arm_power = gamepad2.left_trigger - gamepad2.right_trigger;
+
+            //Send power to motors
+            slide_motor.setPower(slide_power);
+            arm_motor.setPower(arm_power);
+
+            //TODO Fix these servo rotations, i.e make them rotate by the proper amount
+
+            //You can set a servo to a position from 0-1. This corresponds the servo turning to 0-180 degrees from adjacent to where the wires come out
+            //If left bumper is pressed, set servo to 180 degrees. Otherwise, set it to 0
+            double slide_servo_setting = gamepad2.left_bumper ? 1 : 0;
+
+            //If b, set servo to 180 degrees. Otherwise, set it to 0
+            double arm_servo_setting = gamepad2.b ? 1: 0;
+
+            //Set servo positions
+            slide_servo.setPosition(slide_servo_setting);
+            arm_servo.setPosition(arm_servo_setting);
 
             //Display data on driver hub
             telemetry.addData("Status", "Run Time: " + runtime.toString());
