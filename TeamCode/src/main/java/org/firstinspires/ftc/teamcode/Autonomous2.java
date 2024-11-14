@@ -64,6 +64,8 @@ public class Autonomous2 extends LinearOpMode {
         //Initialize AutoMover
         AutoMover autoMover = new AutoMover(front_left_motor, back_left_motor, front_right_motor, back_right_motor);
 
+        //Movement is in cm, rotation is in degrees
+
         //Wait for the other robot to complete their autonomous and get out of the way first
         wait(10);
 

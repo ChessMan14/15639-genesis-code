@@ -64,6 +64,8 @@ public class Autonomous4 extends LinearOpMode {
         //Initialize AutoMover
         AutoMover autoMover = new AutoMover(front_left_motor, back_left_motor, front_right_motor, back_right_motor);
 
+        //Movement is in cm, rotation is in degrees
+
         //Robot needs to move forward a bit so that it has space to rotate
         autoMover.move_forward(5);
         //(left/counterclockwise is negative)
