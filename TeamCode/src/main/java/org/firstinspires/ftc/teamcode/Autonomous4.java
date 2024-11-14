@@ -64,18 +64,14 @@ public class Autonomous4 extends LinearOpMode {
         //Initialize AutoMover
         AutoMover autoMover = new AutoMover(front_left_motor, back_left_motor, front_right_motor, back_right_motor);
 
-        //The rest of the code makes the robot move
-
         //Robot needs to move forward a bit so that it has space to rotate
         autoMover.move_forward(5);
         //(left/counterclockwise is negative)
         autoMover.rotate(-90);
-        autoMover.move_forward(60);
-        //waits for human player to score sample
-        wait(5);
-        autoMover.move_backward(60);
-        autoMover.rotate(90);
-        autoMover.move_backward(5);
+        autoMover.move_forward(40);
 
+        //TODO Implement arm movement to place sample
+
+        autoMover.move_backward(60);
     }
 }

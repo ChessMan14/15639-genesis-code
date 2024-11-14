@@ -64,8 +64,7 @@ public class Autonomous1 extends LinearOpMode {
         //Initialize AutoMover
         AutoMover autoMover = new AutoMover(front_left_motor, back_left_motor, front_right_motor, back_right_motor);
 
-        //The rest of the code makes the robot move
-
+        //Wait for the other robot to complete their autonomous and get out of the way first
         wait(15);
 
         //Robot needs to move forward a bit so that it has space to rotate (cm)
@@ -73,8 +72,7 @@ public class Autonomous1 extends LinearOpMode {
         //(left/counterclockwise is negative)
         autoMover.rotate(-90);
         autoMover.move_forward(240);
-        autoMover.move_backward(240);
-        autoMover.rotate(90);
 
+        //TODO Implement arm movement to place sample
     }
 }
