@@ -70,11 +70,11 @@ public class Autonomous3 extends LinearOpMode {
         autoMover.move_forward(5);
         //(left/counterclockwise is negative)
         autoMover.rotate(-90);
-        autoMover.move_forward(40);
+        autoMover.move_forward(35);
 
         //TODO Implement arm movement to place sample
 
         autoMover.rotate(90);
-        autoMover.move_forward(60);
+        autoMover.move_forward(50);
     }
 }
