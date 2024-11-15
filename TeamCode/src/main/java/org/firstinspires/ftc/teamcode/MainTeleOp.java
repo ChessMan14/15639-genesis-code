@@ -84,8 +84,6 @@ public class MainTeleOp extends LinearOpMode {
         slide_servo = hardwareMap.get(Servo.class, "slide_servo");
         arm_servo = hardwareMap.get(Servo.class, "arm_servo");
 
-        //TODO Fix all these directions
-
         //Set direction of motors
         slide_motor.setDirection(DcMotor.Direction.FORWARD);
         arm_motor.setDirection(DcMotor.Direction.FORWARD);
@@ -104,6 +102,33 @@ public class MainTeleOp extends LinearOpMode {
         //Reset runtime var
         runtime.reset();
 
+        //Hold the maximum power being applied to a single wheel
+        double max;
+
+        //Constant variable for rotation speed
+        final double rotate_fact = 1;
+
+        //initializes variables for the main loop
+
+        //Vertical movement
+        double axial;
+        //Horizontal movement
+        double lateral;
+        //Rotation calculation
+        double yaw;
+
+        double front_left_power;
+        double front_right_power;
+        double back_left_power;
+        double back_right_power;
+
+        int slide_power;
+        double arm_power;
+
+        //settings for servos
+        double slide_servo_setting;
+        double arm_servo_setting;
+
         //Toggle for arm servo
         boolean arm_servo_setting_bool = false;
 
@@ -111,24 +136,18 @@ public class MainTeleOp extends LinearOpMode {
         while (opModeIsActive()) {
             //Movement
 
-            //Hold the maximum power being applied to a single wheel
-            double max;
-
-            //Constant variable for rotation speed
-            final double rotate_fact = 1;
-
             //Vertical movement (up is negative on the joystick)
-            double axial = -gamepad1.left_stick_y;
+            axial = -gamepad1.left_stick_y;
             //Horizontal movement
-            double lateral = gamepad1.left_stick_x;
+            lateral = gamepad1.left_stick_x;
             //Rotation calculation
-            double yaw = rotate_fact*(-gamepad1.left_trigger + gamepad1.right_trigger);
+            yaw = rotate_fact*(-gamepad1.left_trigger + gamepad1.right_trigger);
 
             //Calculate how much power to send to each wheel based on vertical/horizontal movement and rotation
-            double front_left_power = axial + lateral + yaw;
-            double front_right_power = axial - lateral - yaw;
-            double back_left_power = axial - lateral + yaw;
-            double back_right_power = axial + lateral - yaw;
+            front_left_power = axial + lateral + yaw;
+            front_right_power = axial - lateral - yaw;
+            back_left_power = axial - lateral + yaw;
+            back_right_power = axial + lateral - yaw;
 
             //Find the maximum power being applied to a single wheel
             max = Math.max(Math.abs(front_left_power), Math.abs(front_right_power));
@@ -152,26 +171,24 @@ public class MainTeleOp extends LinearOpMode {
             //Arm control
 
             //Java is stupid so this is ugly. slide_power will get 1 if y is pressed, -1 if a is pressed, and 0 if both or neither are pressed
-            int slide_power = (gamepad2.y ? 1 : 0) - (gamepad2.a ? 1 : 0);
+            slide_power = (gamepad2.y ? 1 : 0) - (gamepad2.a ? 1 : 0);
 
             //Triggers used so that the driver can move the arm slower if they want
-            double arm_power = gamepad2.left_trigger - gamepad2.right_trigger;
+            arm_power = gamepad2.left_trigger - gamepad2.right_trigger;
 
             //Send power to motors
             slide_motor.setPower(slide_power);
             arm_motor.setPower(arm_power);
 
-            //TODO Fix these servo rotations, i.e make them rotate by the proper amount
-
             //You can set a servo to a position from 0-1. This corresponds the servo turning to 0-180 degrees from adjacent to where the wires come out
             //If left bumper is pressed, set servo to 180 degrees. Otherwise, set it to 0
-            double slide_servo_setting = gamepad2.left_bumper ? 0.75 : 0.417;
+            slide_servo_setting = gamepad2.left_bumper ? 0.75 : 0.417;
 
             //If b is pressed, toggle arm_servo_setting from 94.4% to 50%
             if (gamepad2.b) {
                 arm_servo_setting_bool ^= true;
             }
-            double arm_servo_setting = arm_servo_setting_bool ? 0.944 : 0.5;
+            arm_servo_setting = arm_servo_setting_bool ? 0.944 : 0.5;
 
             //Set servo positions
             slide_servo.setPosition(slide_servo_setting);
