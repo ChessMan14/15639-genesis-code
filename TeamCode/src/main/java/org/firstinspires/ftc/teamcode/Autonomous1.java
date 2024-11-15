@@ -70,10 +70,9 @@ public class Autonomous1 extends LinearOpMode {
         wait(15);
 
         //Robot needs to move forward a bit so that it has space to rotate (cm)
-        autoMover.move_forward(5);
-        //(left/counterclockwise is negative)
-        autoMover.rotate(-90);
-        autoMover.move_forward(225);
+        //(left/counterclockwise is negative; (distance, degree))
+        autoMover.move(5, 0);
+        autoMover.move(225, -90);
 
         //TODO Implement arm movement to place sample
     }

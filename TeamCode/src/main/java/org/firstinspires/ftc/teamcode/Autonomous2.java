@@ -69,12 +69,10 @@ public class Autonomous2 extends LinearOpMode {
         //Wait for the other robot to complete their autonomous and get out of the way first
         wait(10);
 
-        autoMover.move_forward(70);
-        //(left/counterclockwise is negative)
-        autoMover.rotate(-90);
-        autoMover.move_forward(240);
-        autoMover.rotate(-90);
-        autoMover.move_forward(50);
+        //(left/counterclockwise is negative; (distance, degree))
+        autoMover.move(70, 0);
+        autoMover.move(240, -90);
+        autoMover.move(50, -90);
 
         //TODO Implement arm movement to place sample
     }

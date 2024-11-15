@@ -67,13 +67,12 @@ public class Autonomous4 extends LinearOpMode {
         //Movement is in cm, rotation is in degrees
 
         //Robot needs to move forward a bit so that it has space to rotate
-        autoMover.move_forward(5);
-        //(left/counterclockwise is negative)
-        autoMover.rotate(-90);
-        autoMover.move_forward(35);
+        //(left/counterclockwise is negative; (distance, degree))
+        autoMover.move(5, 0);
+        autoMover.move(35, -90);
 
         //TODO Implement arm movement to place sample
 
-        autoMover.move_backward(50);
+        autoMover.move(50, 180);
     }
 }
