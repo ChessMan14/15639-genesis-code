@@ -29,7 +29,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="Forward Calibration", group="Robot")
+@Autonomous(name="Backward Calibration", group="Robot")
 public class BackwardCalibration extends LinearOpMode {
 
     //Create the variables for the motors and initializes a variable that keeps track of how long the opmode has been running

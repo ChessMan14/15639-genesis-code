@@ -50,13 +50,14 @@ public class MainTeleOp extends LinearOpMode {
     private Servo arm_servo = null;
 
     //Global speed percentage for all wheel movement
-    private final double wheel_speed_coefficient = 0.5;
+    private double wheel_speed_coefficient;
 
     //Speed percentage for slide
-    private final double slide_speed_coefficient = 0.1;
+    private final double slide_speed_coefficient = 0.05;
 
     //Speed percentage for arm
-    private final double arm_speed_coefficient = 0.1;
+    private final double arm_speed_coefficient = 0.05;
+
 
     //We have to override this function since it has already been defined in the parent class LinearOpMode
     @Override
@@ -85,7 +86,7 @@ public class MainTeleOp extends LinearOpMode {
         arm_servo = hardwareMap.get(Servo.class, "arm_servo");
 
         //Set direction of motors
-        slide_motor.setDirection(DcMotor.Direction.FORWARD);
+        slide_motor.setDirection(DcMotor.Direction.REVERSE);
         arm_motor.setDirection(DcMotor.Direction.FORWARD);
 
         //Set direction of servos
@@ -127,10 +128,7 @@ public class MainTeleOp extends LinearOpMode {
 
         //settings for servos
         double slide_servo_setting;
-        double arm_servo_setting;
-
-        //Toggle for arm servo
-        boolean arm_servo_setting_bool = false;
+        double arm_servo_setting = 0.25;
 
         //Main loop. This runs until stop is pressed on the driver hub
         while (opModeIsActive()) {
@@ -162,6 +160,16 @@ public class MainTeleOp extends LinearOpMode {
                 back_right_power /= max;
             }
 
+            //Pressing y activates fast mode, pressing once a activates slow mode. No change if both are pressed
+            if (gamepad1.y ^ gamepad2.a) {
+                if (gamepad1.y) {
+                    arm_servo_setting = 0.35;
+                }
+                else if (gamepad1.a) {
+                    arm_servo_setting = 0.25;
+                }
+            }
+
             //Send power to the motors
             front_left_motor.setPower(front_left_power*wheel_speed_coefficient);
             front_right_motor.setPower(front_right_power*wheel_speed_coefficient);
@@ -182,13 +190,17 @@ public class MainTeleOp extends LinearOpMode {
 
             //You can set a servo to a position from 0-1. This corresponds the servo turning to 0-180 degrees from adjacent to where the wires come out
             //If left bumper is pressed, set servo to 180 degrees. Otherwise, set it to 0
-            slide_servo_setting = gamepad2.left_bumper ? 0.75 : 0.417;
+            slide_servo_setting = gamepad2.left_bumper ? 0.25 : 0.75;
 
-            //If b is pressed, toggle arm_servo_setting from 94.4% to 50%
-            if (gamepad2.b) {
-                arm_servo_setting_bool ^= true;
+            //Pressing b once opens servo, Pressing x once closes it. Do nothing if both are pressed
+            if (gamepad2.b ^ gamepad2.x) {
+                if (gamepad2.b) {
+                    arm_servo_setting = 0.944;
+                }
+                else if (gamepad2.x) {
+                    arm_servo_setting = 0.25;
+                }
             }
-            arm_servo_setting = arm_servo_setting_bool ? 0.944 : 0.5;
 
             //Set servo positions
             slide_servo.setPosition(slide_servo_setting);
