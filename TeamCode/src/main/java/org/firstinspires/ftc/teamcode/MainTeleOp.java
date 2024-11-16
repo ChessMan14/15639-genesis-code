@@ -128,7 +128,10 @@ public class MainTeleOp extends LinearOpMode {
 
         //settings for servos
         double slide_servo_setting;
-        double arm_servo_setting = 0.25;
+        double arm_servo_setting;
+
+        //initializes variable for later
+        boolean arm_servo_initialized = false;
 
         //Main loop. This runs until stop is pressed on the driver hub
         while (opModeIsActive()) {
@@ -196,15 +199,24 @@ public class MainTeleOp extends LinearOpMode {
             if (gamepad2.b ^ gamepad2.x) {
                 if (gamepad2.b) {
                     arm_servo_setting = 0.944;
+                    if (!arm_servo_initialized) {
+                        arm_servo_initialized = true;
+                    }
                 }
                 else if (gamepad2.x) {
                     arm_servo_setting = 0.25;
+                    if (!arm_servo_initialized) {
+                        arm_servo_initialized = true;
+                    }
                 }
             }
 
             //Set servo positions
             slide_servo.setPosition(slide_servo_setting);
-            arm_servo.setPosition(arm_servo_setting);
+            if (arm_servo_initialized) {
+                arm_servo.setPosition(arm_servo_setting);
+            }
+
 
             //Display data on driver hub
             telemetry.addData("Status", "Run Time: " + runtime.toString());
