@@ -166,10 +166,10 @@ public class MainTeleOp extends LinearOpMode {
             //Pressing y activates fast mode, pressing once a activates slow mode. No change if both are pressed
             if (gamepad1.y ^ gamepad2.a) {
                 if (gamepad1.y) {
-                    arm_servo_setting = 0.35;
+                    wheel_speed_coefficient = 0.35;
                 }
                 else if (gamepad1.a) {
-                    arm_servo_setting = 0.25;
+                    wheel_speed_coefficient = 0.25;
                 }
             }
 
