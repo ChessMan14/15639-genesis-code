@@ -67,7 +67,7 @@ public class Autonomous2 extends LinearOpMode {
         //Movement is in cm, rotation is in degrees
 
         //Wait for the other robot to complete their autonomous and get out of the way first
-        wait(10);
+        sleep(10000);
 
         //(left/counterclockwise is negative; (distance, degree))
         autoMover.move(70, 0);

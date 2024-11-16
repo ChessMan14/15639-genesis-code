@@ -44,7 +44,7 @@ public class Autonomous1 extends LinearOpMode {
     //We have to override this function since it has already been defined in the parent class LinearOpMode
     @Override
     //Throws condition is there for the later wait() command; shouldn't ever be an error though
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         //Map the actual physical motors to the variables. The "device_name" variable is set in the driver hub configuration
         front_left_motor = hardwareMap.get(DcMotor.class, "front_left_motor");
         back_left_motor = hardwareMap.get(DcMotor.class, "back_left_motor");
@@ -67,7 +67,7 @@ public class Autonomous1 extends LinearOpMode {
         //Movement is in cm, rotation is in degrees
 
         //Wait for the other robot to complete their autonomous and get out of the way first
-        wait(15);
+        sleep(15000);
 
         //Robot needs to move forward a bit so that it has space to rotate (cm)
         //(left/counterclockwise is negative; (distance, degree))

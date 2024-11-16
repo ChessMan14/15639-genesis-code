@@ -193,7 +193,7 @@ public class MainTeleOp extends LinearOpMode {
 
             //You can set a servo to a position from 0-1. This corresponds the servo turning to 0-180 degrees from adjacent to where the wires come out
             //If left bumper is pressed, set servo to 180 degrees. Otherwise, set it to 0
-            slide_servo_setting = gamepad2.left_bumper ? 0.25 : 0.75;
+            slide_servo_setting = gamepad2.left_bumper ? 0.15 : 0.75;
 
             //Pressing b once opens servo, Pressing x once closes it. Do nothing if both are pressed
             if (gamepad2.b ^ gamepad2.x) {
