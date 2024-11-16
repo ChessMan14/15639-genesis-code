@@ -50,7 +50,7 @@ public class MainTeleOp extends LinearOpMode {
     private Servo arm_servo = null;
 
     //Global speed percentage for all wheel movement
-    private double wheel_speed_coefficient;
+    private double wheel_speed_coefficient = 0.4;
 
     //Speed percentage for slide
     private final double slide_speed_coefficient = 0.05;
@@ -128,7 +128,7 @@ public class MainTeleOp extends LinearOpMode {
 
         //settings for servos
         double slide_servo_setting;
-        double arm_servo_setting;
+        double arm_servo_setting = 0;
 
         //initializes variable for later
         boolean arm_servo_initialized = false;
@@ -166,7 +166,7 @@ public class MainTeleOp extends LinearOpMode {
             //Pressing y activates fast mode, pressing once a activates slow mode. No change if both are pressed
             if (gamepad1.y ^ gamepad2.a) {
                 if (gamepad1.y) {
-                    wheel_speed_coefficient = 0.35;
+                    wheel_speed_coefficient = 0.4;
                 }
                 else if (gamepad1.a) {
                     wheel_speed_coefficient = 0.25;
