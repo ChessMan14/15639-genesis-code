@@ -90,7 +90,7 @@ public class MainTeleOp extends LinearOpMode {
         arm_motor.setDirection(DcMotor.Direction.FORWARD);
 
         //Set direction of servos
-        arm_servo.setDirection(Servo.Direction.FORWARD);
+        slide_servo.setDirection(Servo.Direction.FORWARD);
         arm_servo.setDirection(Servo.Direction.FORWARD);
 
         //This data is displayed on the driver hub console
