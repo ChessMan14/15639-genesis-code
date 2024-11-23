@@ -97,15 +97,13 @@ public class AutoMover {
             back_right_power /= max;
         }
 
-        //Send power to the motors
-        front_left_motor.setPower(front_left_power);
-        front_right_motor.setPower(front_right_power);
-        back_left_motor.setPower(back_left_power);
-        back_right_motor.setPower(back_right_power);
-
         //Wait until done run time expired
-        while (runtime.seconds() > (start + running_time)) {
-            //Do nothing
+        while (runtime.seconds() < (start + running_time)) {
+            //Send power to the motors
+            front_left_motor.setPower(front_left_power);
+            front_right_motor.setPower(front_right_power);
+            back_left_motor.setPower(back_left_power);
+            back_right_motor.setPower(back_right_power);
         }
 
         //Stop engines
@@ -132,7 +130,7 @@ public class AutoMover {
         back_right_motor.setPower(-back_right_motor_coefficient*wheel_speed_coefficient);
 
         //Wait until done run time expired
-        while (runtime.seconds() > (start + running_time)) {
+        while (runtime.seconds() < (start + running_time)) {
             //Do nothing
         }
 

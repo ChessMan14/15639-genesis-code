@@ -49,15 +49,17 @@ public class MainTeleOp extends LinearOpMode {
     private Servo slide_servo = null;
     private Servo arm_servo = null;
 
-    //Global speed percentage for all wheel movement
-    private double wheel_speed_coefficient = 0.4;
-
     //Speed percentage for slide
     private final double slide_speed_coefficient = 0.05;
 
     //Speed percentage for arm
     private final double arm_speed_coefficient = 0.05;
 
+    //Acceleration value for wheels (percent per second)
+    private final double wheel_accel = 5.0/1.0;
+
+    //Max wheel speed
+    private final double max_wheel_speed = 0.35;
 
     //We have to override this function since it has already been defined in the parent class LinearOpMode
     @Override
@@ -133,6 +135,15 @@ public class MainTeleOp extends LinearOpMode {
         //initializes variable for later
         boolean arm_servo_initialized = false;
 
+        //Speed percentage for all wheel movement
+        double wheel_speed = 0;
+
+        //The time (in seconds) when the robot started accelerating (-1 if not accelerating)
+        double accel_start_time = -1;
+
+        //The time when the robot will experience the next boost in speed from acceleration
+        double accel_goal = 0;
+
         //Main loop. This runs until stop is pressed on the driver hub
         while (opModeIsActive()) {
             //Movement
@@ -163,21 +174,32 @@ public class MainTeleOp extends LinearOpMode {
                 back_right_power /= max;
             }
 
-            //Pressing y activates fast mode, pressing once a activates slow mode. No change if both are pressed
-            if (gamepad1.y ^ gamepad2.a) {
-                if (gamepad1.y) {
-                    wheel_speed_coefficient = 0.4;
+            //Calculate acceleration
+            if (axial > 0 || lateral > 0) {
+                //Robot was accelerating last cycle
+                if (accel_start_time > 0) {
+                    //Increase speed if past goal
+                    if (runtime.seconds() >= accel_goal) {
+                        wheel_speed += wheel_accel;
+                        //Here we bank on the fact that the main loop runs at at least 10HZ, but according to Reddit it should run at 40HZ so we should be fine
+                        accel_goal += 0.1;
+                    }
                 }
-                else if (gamepad1.a) {
-                    wheel_speed_coefficient = 0.25;
+                //Robot was not accelerating last cycle
+                else {
+                    accel_start_time = runtime.seconds();
+                    accel_goal = accel_start_time + 0.1;
                 }
+            }
+            else {
+                accel_start_time = -1;
             }
 
             //Send power to the motors
-            front_left_motor.setPower(front_left_power*wheel_speed_coefficient);
-            front_right_motor.setPower(front_right_power*wheel_speed_coefficient);
-            back_left_motor.setPower(back_left_power*wheel_speed_coefficient);
-            back_right_motor.setPower(back_right_power*wheel_speed_coefficient);
+            front_left_motor.setPower(front_left_power*wheel_speed);
+            front_right_motor.setPower(front_right_power*wheel_speed);
+            back_left_motor.setPower(back_left_power*wheel_speed);
+            back_right_motor.setPower(back_right_power*wheel_speed);
 
             //Arm control
 
