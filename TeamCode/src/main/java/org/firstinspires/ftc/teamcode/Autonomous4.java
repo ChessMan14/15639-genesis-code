@@ -89,6 +89,7 @@ public class Autonomous4 extends LinearOpMode {
         //settings for servos
         double slide_servo_setting;
         double arm_servo_setting = 0;
+        arm_servo.setPosition(arm_servo_setting);
 
         //Initialize AutoMover
         AutoMover autoMover = new AutoMover(front_left_motor, back_left_motor, front_right_motor, back_right_motor);
@@ -107,7 +108,6 @@ public class Autonomous4 extends LinearOpMode {
 
         //make the arm go forward
         arm_motor.setPower(-1);
-        arm_servo_setting = (0.944);
 
         while (runtime.seconds() < current_time + 0.75) {
             //do nothing
@@ -115,6 +115,10 @@ public class Autonomous4 extends LinearOpMode {
 
         //stop making arm go forward
         arm_motor.setPower(0);
+
+        //opens claw
+        arm_servo_setting = (0.944);
+        arm_servo.setPosition(arm_servo_setting);
 
 
         autoMover.move(50, 180);
