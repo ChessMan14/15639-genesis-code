@@ -27,6 +27,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Rotation;
@@ -41,6 +42,13 @@ public class Autonomous1 extends LinearOpMode {
     private DcMotor front_right_motor = null;
     private DcMotor back_right_motor = null;
 
+    private DcMotor slide_motor = null;
+    private DcMotor arm_motor = null;
+
+    private Servo slide_servo = null;
+    private Servo arm_servo = null;
+
+
     //We have to override this function since it has already been defined in the parent class LinearOpMode
     @Override
     //Throws condition is there for the later wait() command; shouldn't ever be an error though
@@ -51,6 +59,23 @@ public class Autonomous1 extends LinearOpMode {
         front_right_motor = hardwareMap.get(DcMotor.class, "front_right_motor");
         back_right_motor = hardwareMap.get(DcMotor.class, "back_right_motor");
 
+        //Arm motors and servos
+
+        //Map the actual physical motors to the variables. The "device_name" variable is set in the driver hub configuration
+        slide_motor = hardwareMap.get(DcMotor.class, "slide_motor");
+        arm_motor = hardwareMap.get(DcMotor.class, "arm_motor");
+
+        slide_servo = hardwareMap.get(Servo.class, "slide_servo");
+        arm_servo = hardwareMap.get(Servo.class, "arm_servo");
+
+        //Set direction of motors
+        slide_motor.setDirection(DcMotor.Direction.REVERSE);
+        arm_motor.setDirection(DcMotor.Direction.FORWARD);
+
+        //Set direction of servos
+        slide_servo.setDirection(Servo.Direction.FORWARD);
+        arm_servo.setDirection(Servo.Direction.FORWARD);
+
         //This data is displayed on the driver hub console
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -60,6 +85,10 @@ public class Autonomous1 extends LinearOpMode {
 
         //Reset runtime var
         runtime.reset();
+
+        //settings for servos
+        double slide_servo_setting;
+        double arm_servo_setting = 0;
 
         //Initialize AutoMover
         AutoMover autoMover = new AutoMover(front_left_motor, back_left_motor, front_right_motor, back_right_motor);
@@ -75,5 +104,20 @@ public class Autonomous1 extends LinearOpMode {
         autoMover.move(225, -90);
 
         //TODO Implement arm movement to place sample
+        //Tentatively marked complete; below code should do that
+
+        double current_time = runtime.seconds();
+
+        //make the arm go forward
+        arm_motor.setPower(-1);
+        arm_servo_setting = (0.944);
+
+            while (runtime.seconds() < current_time + 0.75) {
+                //do nothing
+            }
+
+        //stop making arm go forward
+        arm_motor.setPower(0);
+
     }
 }
