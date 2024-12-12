@@ -40,7 +40,7 @@ public class RotationCalibration extends LinearOpMode {
     private DcMotor back_right_motor = null;
 
     //How far the robot is going to try to rotate. Adjust this when trying to make the rotation fit in the measuring tape
-    public final double rotation_degrees = 45;
+    public final double rotation_degrees = 90;
 
     //We have to override this function since it has already been defined in the parent class LinearOpMode
     @Override
@@ -70,5 +70,7 @@ public class RotationCalibration extends LinearOpMode {
         //Add telemetry data
         telemetry.addData("Time spent rotating: ", time_rotated);
         telemetry.update();
+
+        sleep(3000);
     }
 }

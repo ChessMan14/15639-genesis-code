@@ -32,49 +32,57 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Rotation;
 
+import java.util.HashMap;
+
 @Autonomous(name="Autonomous 2", group="Robot")
 public class Autonomous2 extends LinearOpMode {
-
-    //Create the variables for the motors and initializes a variable that keeps track of how long the opmode has been running
+    //Create the variables for the motors and servos and initializes a variable that keeps track of how long the opmode has been running
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor front_left_motor = null;
-    private DcMotor back_left_motor = null;
-    private DcMotor front_right_motor = null;
-    private DcMotor back_right_motor = null;
 
-    private DcMotor slide_motor = null;
-    private DcMotor arm_motor = null;
+    //Map of all motors
+    private HashMap<String, DcMotor> motors = new HashMap<>();
+    //Map of wheel motor powers
+    private HashMap<String, Double> wheel_motor_powers = new HashMap<>();
+    //Map of arm motor powers
+    private HashMap<String, Double> other_motor_powers = new HashMap<>();
 
-    private Servo slide_servo = null;
-    private Servo arm_servo = null;
+    //Map of all servos
+    private HashMap<String, Servo> servos = new HashMap<>();
+    //Map of all servos positions
+    private HashMap<String, Double> servo_positions = new HashMap<>();
 
 
     //We have to override this function since it has already been defined in the parent class LinearOpMode
     @Override
     //Throws condition is there for the later wait() command; shouldn't ever be an error though
-    public void runOpMode() throws InterruptedException {
-        //Map the actual physical motors to the variables. The "device_name" variable is set in the driver hub configuration
-        front_left_motor = hardwareMap.get(DcMotor.class, "front_left_motor");
-        back_left_motor = hardwareMap.get(DcMotor.class, "back_left_motor");
-        front_right_motor = hardwareMap.get(DcMotor.class, "front_right_motor");
-        back_right_motor = hardwareMap.get(DcMotor.class, "back_right_motor");
+    public void runOpMode() {
+        //Create and assign map entries for all motors
+        motors.put("front_left", hardwareMap.get(DcMotor.class, "front_left_motor"));
+        motors.put("back_left", hardwareMap.get(DcMotor.class, "back_left_motor"));
+        motors.put("front_right", hardwareMap.get(DcMotor.class, "front_right_motor"));
+        motors.put("back_right", hardwareMap.get(DcMotor.class, "back_right_motor"));
 
-        //Arm motors and servos
+        motors.put("slide", hardwareMap.get(DcMotor.class, "slide_motor"));
+        motors.put("arm", hardwareMap.get(DcMotor.class, "arm_motor"));
+        //motors.put("actuator", hardwareMap.get(DcMotor.class, "actuator_motor"));
 
-        //Map the actual physical motors to the variables. The "device_name" variable is set in the driver hub configuration
-        slide_motor = hardwareMap.get(DcMotor.class, "slide_motor");
-        arm_motor = hardwareMap.get(DcMotor.class, "arm_motor");
-
-        slide_servo = hardwareMap.get(Servo.class, "slide_servo");
-        arm_servo = hardwareMap.get(Servo.class, "arm_servo");
+        //Create and assign map entries for all servos
+        servos.put("slide_servo", hardwareMap.get(Servo.class, "slide_servo"));
+        servos.put("arm_servo", hardwareMap.get(Servo.class, "arm_servo"));
 
         //Set direction of motors
-        slide_motor.setDirection(DcMotor.Direction.REVERSE);
-        arm_motor.setDirection(DcMotor.Direction.FORWARD);
+        motors.get("front_left").setDirection(DcMotor.Direction.REVERSE);
+        motors.get("back_left").setDirection(DcMotor.Direction.REVERSE);
+        motors.get("front_right").setDirection(DcMotor.Direction.FORWARD);
+        motors.get("back_right").setDirection(DcMotor.Direction.FORWARD);
+
+        motors.get("slide").setDirection(DcMotor.Direction.REVERSE);
+        motors.get("arm").setDirection(DcMotor.Direction.FORWARD);
+        //motors.get("actuator").setDirection(DcMotor.Direction.FORWARD);
 
         //Set direction of servos
-        slide_servo.setDirection(Servo.Direction.FORWARD);
-        arm_servo.setDirection(Servo.Direction.FORWARD);
+        servos.get("slide_servo").setDirection(Servo.Direction.FORWARD);
+        servos.get("arm_servo").setDirection(Servo.Direction.FORWARD);
 
         //This data is displayed on the driver hub console
         telemetry.addData("Status", "Initialized");
@@ -90,8 +98,12 @@ public class Autonomous2 extends LinearOpMode {
         double slide_servo_setting;
         double arm_servo_setting = 0;
 
+        //Grip sample
+        arm_servo_setting = 0.944;
+        servos.get("arm_servo").setPosition(arm_servo_setting);
+
         //Initialize AutoMover
-        AutoMover autoMover = new AutoMover(front_left_motor, back_left_motor, front_right_motor, back_right_motor);
+        AutoMover autoMover = new AutoMover(motors.get("front_left"), motors.get("back_left_motor"), motors.get("front_right_motor"), motors.get("back_right_motor"));
 
         //Movement is in cm, rotation is in degrees
 
@@ -103,21 +115,20 @@ public class Autonomous2 extends LinearOpMode {
         autoMover.move(240, -90);
         autoMover.move(50, -90);
 
-        //TODO Implement arm movement to place sample
-        //Tentatively marked complete; below code should do that
-
         double current_time = runtime.seconds();
 
         //make the arm go forward
-        arm_motor.setPower(-1);
-        arm_servo_setting = (0.944);
+        motors.get("arm_motor").setPower(-1);
 
         while (runtime.seconds() < current_time + 0.75) {
             //do nothing
         }
 
         //stop making arm go forward
-        arm_motor.setPower(0);
+        motors.get("arm_motor").setPower(0);
 
+        //Release sample
+        arm_servo_setting = 0.25;
+        servos.get("arm_servo").setPosition(arm_servo_setting);
     }
 }

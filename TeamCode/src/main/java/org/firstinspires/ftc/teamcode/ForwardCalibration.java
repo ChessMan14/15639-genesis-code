@@ -31,7 +31,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name="Forward Calibration", group="Robot")
 public class ForwardCalibration extends LinearOpMode {
-
     //Create the variables for the motors and initializes a variable that keeps track of how long the opmode has been running
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor front_left_motor = null;

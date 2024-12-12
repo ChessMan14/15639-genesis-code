@@ -26,6 +26,8 @@ package org.firstinspires.ftc.teamcode;
 
 import java.lang.Math;
 
+import java.util.HashMap;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -33,35 +35,32 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class AutoMover {
     //Create the variables for the motors and initializes a variable that keeps track of how long the opmode has been running
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor front_left_motor = null;
-    private DcMotor back_left_motor = null;
-    private DcMotor front_right_motor = null;
-    private DcMotor back_right_motor = null;
 
-    //These variables can be manually adjusted if certain engines are slightly more powerful than others
-    private final double front_left_motor_coefficient = 1;
-    private final double back_left_motor_coefficient = 1;
-    private final double front_right_motor_coefficient = 1;
-    private final double back_right_motor_coefficient = 1;
+    //Map of all motors
+    private HashMap<String, DcMotor> motors = new HashMap<>();
+    //Map of wheel motor powers
+    private HashMap<String, Double> motor_powers = new HashMap<>();
 
     //You multiply the distance you want to move (or degrees you want to rotate) by these values to get a time in seconds you have to let the engines run for
-    private final double distance_time_conv_fact = 0.01;
-    private final double rotation_time_conv_fact = 0.01;
+    private final double distance_time_conv_fact = 0.00984251968;
+    private final double rotation_time_conv_fact = 0.035;
 
-    //Global speed percentage for all movement
-    private final double wheel_speed_coefficient = 0.1;
+    //Global speed percentage for movement
+    private final double wheel_speed_coefficient = 0.01;
+    //Global speed percentage for rotation
+    private final double rotation_speed_coefficient = 0.20;
 
     public AutoMover(DcMotor front_left_motor, DcMotor back_left_motor, DcMotor front_right_motor, DcMotor back_right_motor) {
-        this.front_left_motor = front_left_motor;
-        this.front_right_motor = front_right_motor;
-        this.back_left_motor = back_left_motor;
-        this.back_right_motor = back_right_motor;
+        motors.put("front_left", front_left_motor);
+        motors.put("back_left", back_left_motor);
+        motors.put("front_right", front_right_motor);
+        motors.put("back_right", back_right_motor);
 
         //Set motor directions
-        this.front_left_motor.setDirection(DcMotor.Direction.REVERSE);
-        this.back_left_motor.setDirection(DcMotor.Direction.REVERSE);
-        this.front_right_motor.setDirection(DcMotor.Direction.FORWARD);
-        this.back_right_motor.setDirection(DcMotor.Direction.FORWARD);
+        motors.get("front_left").setDirection(DcMotor.Direction.REVERSE);
+        motors.get("back_left").setDirection(DcMotor.Direction.REVERSE);
+        motors.get("front_right").setDirection(DcMotor.Direction.FORWARD);
+        motors.get("back_right").setDirection(DcMotor.Direction.FORWARD);
     }
 
     public double move(double distance, double degrees) {
@@ -77,44 +76,41 @@ public class AutoMover {
         double lateral = distance*Math.sin(degrees);
 
         //Calculate how much power to send to each wheel based on vertical/horizontal movement and rotation
-        double front_left_power = wheel_speed_coefficient*(axial + lateral);
-        double front_right_power = wheel_speed_coefficient*(axial - lateral);
-        double back_left_power = wheel_speed_coefficient*(axial - lateral);
-        double back_right_power = wheel_speed_coefficient*(axial + lateral);
-
-        double max;
+        motor_powers.put("front_left", wheel_speed_coefficient*(axial + lateral));
+        motor_powers.put("back_left", wheel_speed_coefficient*(axial - lateral));
+        motor_powers.put("front_right", wheel_speed_coefficient*(axial - lateral));
+        motor_powers.put("back_right", wheel_speed_coefficient*(axial + lateral));
 
         //Find the maximum power being applied to a single wheel
-        max = Math.max(Math.abs(front_left_power), Math.abs(front_right_power));
-        max = Math.max(max, Math.abs(back_left_power));
-        max = Math.max(max, Math.abs(back_right_power));
+        double max;
+        max = Math.max(Math.abs(motor_powers.get("front_left")), Math.abs(motor_powers.get("front_right")));
+        max = Math.max(max, Math.abs(motor_powers.get("back_left")));
+        max = Math.max(max, Math.abs(motor_powers.get("back_right")));
 
         //If power > 100%, scale down all the power variables.
         if (max > 1.0) {
-            front_left_power /= max;
-            front_right_power /= max;
-            back_left_power /= max;
-            back_right_power /= max;
+            double final_max = max;
+            motor_powers.replaceAll((key, val) -> val/final_max);
         }
 
         //Wait until done run time expired
         while (runtime.seconds() < (start + running_time)) {
             //Send power to the motors
-            front_left_motor.setPower(front_left_power);
-            front_right_motor.setPower(front_right_power);
-            back_left_motor.setPower(back_left_power);
-            back_right_motor.setPower(back_right_power);
+            for (String key : motors.keySet()) {
+                motors.get(key).setPower(motor_powers.get(key));
+            }
         }
 
         //Stop engines
-        front_left_motor.setPower(0);
-        front_right_motor.setPower(0);
-        back_left_motor.setPower(0);
-        back_right_motor.setPower(0);
+        for (String key : motors.keySet()) {
+            motors.get(key).setPower(0);
+        }
 
         //Used for telemetry and calibration purposes
         return running_time;
     }
+
+
 
     //0 degrees is directly forward. To the left is negative
     public double rotate(double degrees) {
@@ -123,22 +119,36 @@ public class AutoMover {
         //Get current time in seconds
         double start = runtime.seconds();
 
-        //Send power to engines. Note the sign changes
-        front_left_motor.setPower(front_left_motor_coefficient*wheel_speed_coefficient);
-        front_right_motor.setPower(-front_right_motor_coefficient*wheel_speed_coefficient);
-        back_left_motor.setPower(back_left_motor_coefficient*wheel_speed_coefficient);
-        back_right_motor.setPower(-back_right_motor_coefficient*wheel_speed_coefficient);
+        //Calculate how much power to send to each wheel
+        motor_powers.put("front_left", rotation_speed_coefficient);
+        motor_powers.put("back_left", rotation_speed_coefficient);
+        motor_powers.put("front_right", -rotation_speed_coefficient);
+        motor_powers.put("back_right", -rotation_speed_coefficient);
+
+        //Find the maximum power being applied to a single wheel
+        double max;
+        max = Math.max(Math.abs(motor_powers.get("front_left")), Math.abs(motor_powers.get("front_right")));
+        max = Math.max(max, Math.abs(motor_powers.get("back_left")));
+        max = Math.max(max, Math.abs(motor_powers.get("back_right")));
+
+        //If power > 100%, scale down all the power variables.
+        if (max > 1.0) {
+            double final_max = max;
+            motor_powers.replaceAll((key, val) -> val/final_max);
+        }
 
         //Wait until done run time expired
         while (runtime.seconds() < (start + running_time)) {
-            //Do nothing
+            //Send power to the motors
+            for (String key : motors.keySet()) {
+                motors.get(key).setPower(motor_powers.get(key));
+            }
         }
 
         //Stop engines
-        front_left_motor.setPower(0);
-        front_right_motor.setPower(0);
-        back_left_motor.setPower(0);
-        back_right_motor.setPower(0);
+        for (String key : motors.keySet()) {
+            motors.get(key).setPower(0);
+        }
 
         //Used for telemetry and calibration purposes
         return running_time;
