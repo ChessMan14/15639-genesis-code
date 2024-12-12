@@ -59,10 +59,10 @@ public class MainTeleOp extends LinearOpMode {
     private final double arm_speed_coefficient = 0.05;
 
     //Acceleration value for wheels (percent per second)
-    private final double wheel_accel = 1.5/1.0;
+    private final double wheel_accel = 0.25/0.1;
 
     //Max wheel speed
-    private final double max_wheel_speed = 0.35;
+    private final double max_wheel_speed = 0.5;
 
     //We have to override this function since it has already been defined in the parent class LinearOpMode
     @Override
@@ -75,7 +75,6 @@ public class MainTeleOp extends LinearOpMode {
 
         motors.put("slide", hardwareMap.get(DcMotor.class, "slide_motor"));
         motors.put("arm", hardwareMap.get(DcMotor.class, "arm_motor"));
-        motors.put("actuator", hardwareMap.get(DcMotor.class, "actuator_motor"));
 
         //Create and assign map entries for all servos
         servos.put("slide_servo", hardwareMap.get(Servo.class, "slide_servo"));
@@ -89,7 +88,6 @@ public class MainTeleOp extends LinearOpMode {
 
         motors.get("slide").setDirection(DcMotor.Direction.REVERSE);
         motors.get("arm").setDirection(DcMotor.Direction.FORWARD);
-        motors.get("actuator").setDirection(DcMotor.Direction.FORWARD);
 
         //Set direction of servos
         servos.get("slide_servo").setDirection(Servo.Direction.FORWARD);
@@ -128,7 +126,6 @@ public class MainTeleOp extends LinearOpMode {
 
         other_motor_powers.put("slide", 0.0);
         other_motor_powers.put("arm", 0.0);
-        other_motor_powers.put("actuator", 0.0);
 
         //Settings for servos
         servo_positions.put("slide_servo", 0.0);
@@ -155,7 +152,7 @@ public class MainTeleOp extends LinearOpMode {
             //Horizontal movement
             lateral = gamepad1.left_stick_x;
             //Rotation calculation
-            yaw = rotate_fact*(-gamepad1.right_stick_x + gamepad1.right_stick_x);
+            yaw = rotate_fact*(gamepad1.right_stick_x);
 
             //Calculate how much power to send to each wheel based on vertical/horizontal movement and rotation
             wheel_motor_powers.put("front_left", axial + lateral + yaw);
@@ -175,12 +172,14 @@ public class MainTeleOp extends LinearOpMode {
             }
 
             //Calculate acceleration
-            if (axial > 0 || lateral > 0) {
+            if (axial != 0 || lateral != 0 || yaw != 0) {
                 //Robot was accelerating last cycle
                 if (accel_start_time > 0) {
                     //Increase speed if past goal
                     if (runtime.seconds() >= accel_goal) {
-                        wheel_speed += wheel_accel;
+                        if (wheel_speed < max_wheel_speed) {
+                            wheel_speed += wheel_accel;
+                        }
                         //Here we bank on the fact that the main loop runs at at least 10HZ, but according to Reddit it should run at 40HZ so we should be fine
                         accel_goal += 0.1;
                     }
@@ -193,11 +192,12 @@ public class MainTeleOp extends LinearOpMode {
             }
             else {
                 accel_start_time = -1;
+                wheel_speed = 0;
             }
 
             //Send power to the motors
             double final_wheel_speed = wheel_speed;
-            wheel_motor_powers.replaceAll((key, val) -> val* final_wheel_speed);
+            wheel_motor_powers.replaceAll((key, val) -> val*final_wheel_speed);
 
             //Arm control
 
@@ -206,9 +206,6 @@ public class MainTeleOp extends LinearOpMode {
 
             //Triggers used so that the driver can move the arm slower if they want
             other_motor_powers.put("arm", (double)(gamepad2.left_trigger - gamepad2.right_trigger));
-
-            //Actuator control
-            other_motor_powers.put("actuator", (double)((gamepad2.dpad_up ? 1 : 0) - (gamepad2.dpad_down ? 1 : 0)));
 
             //Send power to motors
             for (String key : motors.keySet()) {
@@ -227,13 +224,13 @@ public class MainTeleOp extends LinearOpMode {
             //Pressing b once opens servo, Pressing x once closes it. Do nothing if both are pressed
             if (gamepad2.b ^ gamepad2.x) {
                 if (gamepad2.b) {
-                    servo_positions.put("arm_servo", 0.944);
+                    servo_positions.put("arm_servo", 0.95);
                     if (!arm_servo_initialized) {
                         arm_servo_initialized = true;
                     }
                 }
                 else if (gamepad2.x) {
-                    servo_positions.put("arm_servo", 0.10);
+                    servo_positions.put("arm_servo", 0.25);
                     if (!arm_servo_initialized) {
                         arm_servo_initialized = true;
                     }
