@@ -93,7 +93,7 @@ public class MainTeleOp extends LinearOpMode {
 
         //Set direction of servos
         servos.get("slide_servo").setDirection(Servo.Direction.FORWARD);
-        servos.get("arm_servo").setDirection(Servo.Direction.FORWARD);
+        servos.get("arm_servo").setDirection(Servo.Direction.REVERSE);
 
         //This data is displayhed on the driver hub console
         telemetry.addData("Status", "Initialized");
@@ -155,7 +155,7 @@ public class MainTeleOp extends LinearOpMode {
             //Horizontal movement
             lateral = gamepad1.left_stick_x;
             //Rotation calculation
-            yaw = rotate_fact*(-gamepad1.left_trigger + gamepad1.right_trigger);
+            yaw = rotate_fact*(-gamepad1.right_stick_x + gamepad1.right_stick_x);
 
             //Calculate how much power to send to each wheel based on vertical/horizontal movement and rotation
             wheel_motor_powers.put("front_left", axial + lateral + yaw);
@@ -233,7 +233,7 @@ public class MainTeleOp extends LinearOpMode {
                     }
                 }
                 else if (gamepad2.x) {
-                    servo_positions.put("arm_servo", 0.25);
+                    servo_positions.put("arm_servo", 0.10);
                     if (!arm_servo_initialized) {
                         arm_servo_initialized = true;
                     }
