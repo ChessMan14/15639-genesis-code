@@ -56,13 +56,13 @@ public class MainTeleOp extends LinearOpMode {
     private final double slide_speed_coefficient = 0.05;
 
     //Speed percentage for arm
-    private final double arm_speed_coefficient = 0.05;
-
-    //Acceleration value for wheels (percent per second)
-    private final double wheel_accel = 0.25/0.1;
+    private final double arm_speed_coefficient = 0.50;
 
     //Max wheel speed
     private final double max_wheel_speed = 0.5;
+
+    //Constant variable for rotation speed
+    final double rotate_fact = 0.75;
 
     //We have to override this function since it has already been defined in the parent class LinearOpMode
     @Override
@@ -106,9 +106,6 @@ public class MainTeleOp extends LinearOpMode {
         //Hold the maximum power being applied to a single wheel
         double max;
 
-        //Constant variable for rotation speed
-        final double rotate_fact = 1;
-
         //initializes variables for the main loop
 
         //Vertical movement
@@ -143,6 +140,9 @@ public class MainTeleOp extends LinearOpMode {
         //The time when the robot will experience the next boost in speed from acceleration
         double accel_goal = 0;
 
+        //Acceleration value for wheels (percent per second). Default is fast mode
+        double wheel_accel = 0.2/0.1;
+
         //Main loop. This runs until stop is pressed on the driver hub
         while (opModeIsActive()) {
             //Movement
@@ -152,7 +152,12 @@ public class MainTeleOp extends LinearOpMode {
             //Horizontal movement
             lateral = gamepad1.left_stick_x;
             //Rotation calculation
-            yaw = rotate_fact*(gamepad1.right_stick_x);
+            if ((gamepad1.right_trigger + gamepad1.left_trigger) > 0) {
+                yaw = rotate_fact*(-gamepad1.left_trigger + gamepad1.right_trigger);
+            }
+            else {
+                yaw = rotate_fact * (gamepad1.right_stick_x);
+            }
 
             //Calculate how much power to send to each wheel based on vertical/horizontal movement and rotation
             wheel_motor_powers.put("front_left", axial + lateral + yaw);
@@ -169,6 +174,14 @@ public class MainTeleOp extends LinearOpMode {
             if (max > 1.0) {
                 double final_max = max;
                 wheel_motor_powers.replaceAll((key, val) -> val/final_max);
+            }
+
+            //Check for accel mode changes
+            if (gamepad1.dpad_up) {
+                wheel_accel = 0.2/0.1;
+            }
+            else if (gamepad1.dpad_down) {
+                wheel_accel = 0.05/0.1;
             }
 
             //Calculate acceleration
@@ -205,7 +218,7 @@ public class MainTeleOp extends LinearOpMode {
             other_motor_powers.put("slide", (double)((gamepad2.y ? 1 : 0) - (gamepad2.a ? 1 : 0)));
 
             //Triggers used so that the driver can move the arm slower if they want
-            other_motor_powers.put("arm", (double)(gamepad2.left_trigger - gamepad2.right_trigger));
+            other_motor_powers.put("arm", (double)((gamepad2.left_trigger - gamepad2.right_trigger)*arm_speed_coefficient));
 
             //Send power to motors
             for (String key : motors.keySet()) {

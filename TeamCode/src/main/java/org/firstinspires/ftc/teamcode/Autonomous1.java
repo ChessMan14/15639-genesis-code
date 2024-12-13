@@ -82,7 +82,7 @@ public class Autonomous1 extends LinearOpMode {
 
         //Set direction of servos
         servos.get("slide_servo").setDirection(Servo.Direction.FORWARD);
-        servos.get("arm_servo").setDirection(Servo.Direction.FORWARD);
+        servos.get("arm_servo").setDirection(Servo.Direction.REVERSE);
 
         //This data is displayed on the driver hub console
         telemetry.addData("Status", "Initialized");
@@ -99,11 +99,11 @@ public class Autonomous1 extends LinearOpMode {
         double arm_servo_setting = 0;
 
         //Grip sample
-        arm_servo_setting = 0.944;
+        arm_servo_setting = 0.95;
         servos.get("arm_servo").setPosition(arm_servo_setting);
 
         //Initialize AutoMover
-        AutoMover autoMover = new AutoMover(motors.get("front_left"), motors.get("back_left_motor"), motors.get("front_right_motor"), motors.get("back_right_motor"));
+        AutoMover autoMover = new AutoMover(motors.get("front_left"), motors.get("back_left"), motors.get("front_right"), motors.get("back_right"));
 
         //Movement is in cm, rotation is in degrees
 
@@ -112,20 +112,23 @@ public class Autonomous1 extends LinearOpMode {
 
         //Robot needs to move forward a bit so that it has space to rotate (cm)
         //(left/counterclockwise is negative; (distance, degree))
-        autoMover.move(5, 0);
+        autoMover.move(20, 0);
+        sleep(1000);
         autoMover.move(225, -90);
+        sleep(1000);
+        autoMover.rotate(-90);
 
         double current_time = runtime.seconds();
 
         //make the arm go forward
-        motors.get("arm_motor").setPower(-1);
+        motors.get("arm").setPower(-1);
 
         while (runtime.seconds() < current_time + 0.75) {
             //do nothing
         }
 
         //stop making arm go forward
-        motors.get("arm_motor").setPower(0);
+        motors.get("arm").setPower(0);
 
         //Release sample
         arm_servo_setting = 0.25;

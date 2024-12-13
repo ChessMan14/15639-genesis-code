@@ -71,9 +71,9 @@ public class AutoMover {
         double start = runtime.seconds();
 
         //Vertical movement
-        double axial = distance*Math.cos(degrees);
+        double axial = distance*Math.cos(Math.toRadians(degrees));
         //Horizontal movement
-        double lateral = distance*Math.sin(degrees);
+        double lateral = distance*Math.sin(Math.toRadians(degrees));
 
         //Calculate how much power to send to each wheel based on vertical/horizontal movement and rotation
         motor_powers.put("front_left", wheel_speed_coefficient*(axial + lateral));
