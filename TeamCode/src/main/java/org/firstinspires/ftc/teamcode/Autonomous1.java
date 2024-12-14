@@ -112,18 +112,18 @@ public class Autonomous1 extends LinearOpMode {
 
         //Robot needs to move forward a bit so that it has space to rotate (cm)
         //(left/counterclockwise is negative; (distance, degree))
-        autoMover.move(20, 0);
+        autoMover.move(40, 0);
         sleep(1000);
-        autoMover.move(225, -90);
+        autoMover.move(165, -90);
         sleep(1000);
-        autoMover.rotate(-90);
+        autoMover.rotate(-75);
 
         double current_time = runtime.seconds();
 
         //make the arm go forward
-        motors.get("arm").setPower(-1);
+        motors.get("arm").setPower(0.35);
 
-        while (runtime.seconds() < current_time + 0.75) {
+        while (runtime.seconds() < current_time + 1) {
             //do nothing
         }
 

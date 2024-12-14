@@ -120,10 +120,18 @@ public class AutoMover {
         double start = runtime.seconds();
 
         //Calculate how much power to send to each wheel
-        motor_powers.put("front_left", rotation_speed_coefficient);
-        motor_powers.put("back_left", rotation_speed_coefficient);
-        motor_powers.put("front_right", -rotation_speed_coefficient);
-        motor_powers.put("back_right", -rotation_speed_coefficient);
+        if (degrees > 0) {
+            motor_powers.put("front_left", rotation_speed_coefficient);
+            motor_powers.put("back_left", rotation_speed_coefficient);
+            motor_powers.put("front_right", -rotation_speed_coefficient);
+            motor_powers.put("back_right", -rotation_speed_coefficient);
+        }
+        else {
+            motor_powers.put("front_left", -rotation_speed_coefficient);
+            motor_powers.put("back_left", -rotation_speed_coefficient);
+            motor_powers.put("front_right", rotation_speed_coefficient);
+            motor_powers.put("back_right", rotation_speed_coefficient);
+        }
 
         //Find the maximum power being applied to a single wheel
         double max;
