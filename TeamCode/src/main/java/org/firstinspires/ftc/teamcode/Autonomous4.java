@@ -82,7 +82,7 @@ public class Autonomous4 extends LinearOpMode {
 
         //Set direction of servos
         servos.get("slide_servo").setDirection(Servo.Direction.FORWARD);
-        servos.get("arm_servo").setDirection(Servo.Direction.FORWARD);
+        servos.get("arm_servo").setDirection(Servo.Direction.REVERSE);
 
         //This data is displayed on the driver hub console
         telemetry.addData("Status", "Initialized");
@@ -99,18 +99,18 @@ public class Autonomous4 extends LinearOpMode {
         double arm_servo_setting = 0;
 
         //Grip sample
-        arm_servo_setting = 0.944;
+        arm_servo_setting = 0.95;
         servos.get("arm_servo").setPosition(arm_servo_setting);
 
         //Initialize AutoMover
-        AutoMover autoMover = new AutoMover(motors.get("front_left"), motors.get("back_left_motor"), motors.get("front_right_motor"), motors.get("back_right_motor"));
+        AutoMover autoMover = new AutoMover(motors.get("front_left"), motors.get("back_left"), motors.get("front_right"), motors.get("back_right"));
 
         //Movement is in cm, rotation is in degrees
 
         //Robot needs to move forward a bit so that it has space to rotate
         //(left/counterclockwise is negative; (distance, degree))
-        autoMover.move(5, 0);
-        autoMover.move(35, -90);
+        autoMover.move(35, 0);
+        sleep(1000);
 
         //TODO Implement arm movement to place sample
         //Tentatively marked complete; below code should do that
@@ -118,20 +118,29 @@ public class Autonomous4 extends LinearOpMode {
         double current_time = runtime.seconds();
 
         //make the arm go forward
-        motors.get("arm_motor").setPower(-1);
+        motors.get("arm").setPower(0.35);
 
-        while (runtime.seconds() < current_time + 0.75) {
+        while (runtime.seconds() < current_time + 1) {
             //do nothing
         }
 
         //stop making arm go forward
-        motors.get("arm_motor").setPower(0);
+        motors.get("arm").setPower(0);
+        sleep(1000);
 
         //Release sample
         arm_servo_setting = 0.25;
         servos.get("arm_servo").setPosition(arm_servo_setting);
+        sleep(1000);
 
-        //Move robot out
+        //make the arm go back
+        motors.get("arm").setPower(-0.35);
+
+        while (runtime.seconds() < current_time + 1) {
+            //do nothing
+        }
+        sleep(1000);
+
         autoMover.move(50, 180);
     }
 }

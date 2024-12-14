@@ -114,7 +114,7 @@ public class Autonomous1 extends LinearOpMode {
         //(left/counterclockwise is negative; (distance, degree))
         autoMover.move(40, 0);
         sleep(1000);
-        autoMover.move(165, -90);
+        autoMover.move(135, -90);
         sleep(1000);
         autoMover.rotate(-75);
 
