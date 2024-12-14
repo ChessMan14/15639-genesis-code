@@ -53,10 +53,10 @@ public class MainTeleOp extends LinearOpMode {
     private HashMap<String, Double> servo_positions = new HashMap<>();
 
     //Speed percentage for slide
-    private final double slide_speed_coefficient = 0.05;
+    private final double slide_speed_coefficient = 0.70;
 
     //Speed percentage for arm
-    private final double arm_speed_coefficient = 0.50;
+    private final double arm_speed_coefficient = 0.40;
 
     //Max wheel speed
     private final double max_wheel_speed = 0.5;
@@ -143,6 +143,11 @@ public class MainTeleOp extends LinearOpMode {
         //Acceleration value for wheels (percent per second). Default is fast mode
         double wheel_accel = 0.2/0.1;
 
+        //Macro to raise arm and drop sample in bucket
+        boolean raise_drop_macro_running = false;
+        double raise_drop_macro_goal = -1;
+
+
         //Main loop. This runs until stop is pressed on the driver hub
         while (opModeIsActive()) {
             //Movement
@@ -176,12 +181,34 @@ public class MainTeleOp extends LinearOpMode {
                 wheel_motor_powers.replaceAll((key, val) -> val/final_max);
             }
 
+            //Arm macro
+            if (gamepad2.dpad_left || raise_drop_macro_running) {
+                //First cycle
+                if (raise_drop_macro_goal < 0) {
+                    raise_drop_macro_goal = runtime.seconds() + 1.5;
+                    other_motor_powers.put("arm", -0.35);
+                    raise_drop_macro_running = true;
+                }
+                //Arm was done raising half a second ago
+                else if (raise_drop_macro_goal < runtime.seconds()) {
+                    servo_positions.put("arm_servo", 0.25);
+                    servos.get("arm_servo").setPosition(servo_positions.get("arm_servo"));
+                }
+                //Arm was done raising 0.5 second second ago
+                  if (raise_drop_macro_goal + 0.5 < runtime.seconds()) {
+                    other_motor_powers.put("arm", 0.0);
+                    raise_drop_macro_running = false;
+                    raise_drop_macro_goal = -1;
+                }
+
+            }
+
             //Check for accel mode changes
             if (gamepad1.dpad_up) {
-                wheel_accel = 0.2/0.1;
+                wheel_accel = 0.1/0.1;
             }
             else if (gamepad1.dpad_down) {
-                wheel_accel = 0.05/0.1;
+                wheel_accel = 0.025/0.1;
             }
 
             //Calculate acceleration
@@ -215,10 +242,12 @@ public class MainTeleOp extends LinearOpMode {
             //Arm control
 
             //Java is stupid so this is ugly. slide will get 1 if y is pressed, -1 if a is pressed, and 0 if both or neither are pressed
-            other_motor_powers.put("slide", (double)((gamepad2.y ? 1 : 0) - (gamepad2.a ? 1 : 0)));
+            other_motor_powers.put("slide", (double)((gamepad2.y ? 1 : 0) - (gamepad2.a ? 1 : 0))*slide_speed_coefficient);
 
             //Triggers used so that the driver can move the arm slower if they want
-            other_motor_powers.put("arm", (double)((gamepad2.left_trigger - gamepad2.right_trigger)*arm_speed_coefficient));
+            if (!raise_drop_macro_running) {
+                other_motor_powers.put("arm", (double) ((gamepad2.left_trigger - gamepad2.right_trigger) * arm_speed_coefficient));
+            }
 
             //Send power to motors
             for (String key : motors.keySet()) {
@@ -235,7 +264,7 @@ public class MainTeleOp extends LinearOpMode {
             servo_positions.put("slide_servo", gamepad2.left_bumper ? 0.15 : 0.75);
 
             //Pressing b once opens servo, Pressing x once closes it. Do nothing if both are pressed
-            if (gamepad2.b ^ gamepad2.x) {
+            if ((gamepad2.b ^ gamepad2.x) && !raise_drop_macro_running) {
                 if (gamepad2.b) {
                     servo_positions.put("arm_servo", 0.95);
                     if (!arm_servo_initialized) {
