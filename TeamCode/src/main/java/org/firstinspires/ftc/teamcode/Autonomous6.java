@@ -32,7 +32,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.HashMap;
 
-@Autonomous(name="Autonomous 5", group="Robot")
+@Autonomous(name="Autonomous 6", group="Robot")
 public class Autonomous6 extends LinearOpMode {
     //Create the variables for the motors and servos and init
     // ializes a variable that keeps track of how long the opmode has been running
@@ -113,7 +113,7 @@ public class Autonomous6 extends LinearOpMode {
         //(left/counterclockwise is negative; (distance, degree))
         autoMover.move(40, 0);
         sleep(1000);
-        autoMover.move(75, -80);
+        autoMover.move(75, 80);
         sleep(1000);
         autoMover.move(30, 0);
 
@@ -139,7 +139,7 @@ public class Autonomous6 extends LinearOpMode {
         autoMover.move(20, 180);
 
         //make the arm go forward
-        motors.get("arm").setPower(-0.5Autonomous5);
+        motors.get("arm").setPower(-0.5);
 
         while (runtime.seconds() < current_time + 1) {
             //do nothing
