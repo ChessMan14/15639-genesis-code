@@ -205,7 +205,7 @@ public class MainTeleOp extends LinearOpMode {
 
             //Check for accel mode changes
             if (gamepad1.dpad_up) {
-                wheel_accel = 0.1/0.1;
+                wheel_accel = 0.05/0.1;
             }
             else if (gamepad1.dpad_down) {
                 wheel_accel = 0.025/0.1;
