@@ -67,6 +67,10 @@ public class MainTeleOp extends LinearOpMode {
     //Constant variable for rotation speed
     final double rotate_fact = 0.75;
 
+    //Counts per revolution (encoder thing)
+    //See https://www.gobilda.com/5202-series-yellow-jacket-planetary-gear-motor-26-9-1-ratio-223-rpm-3-3-5v-encoder/
+    final double CPR = 751.8;
+
     //We have to override this function since it has already been defined in the parent class LinearOpMode
     @Override
     public void runOpMode() {
@@ -83,6 +87,12 @@ public class MainTeleOp extends LinearOpMode {
         //Create and assign map entries for all servos
         servos.put("slide_servo", hardwareMap.get(Servo.class, "slide_servo"));
         servos.put("arm_servo", hardwareMap.get(Servo.class, "arm_servo"));
+
+        //Reset encoders
+        for (String key : motors.keySet()) {
+            motors.get(key).setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            motors.get(key).setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
 
         //Set direction of motors
         motors.get("front_left").setDirection(DcMotor.Direction.REVERSE);
@@ -311,6 +321,7 @@ public class MainTeleOp extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", wheel_motor_powers.get("front_left"), wheel_motor_powers.get("front_right"));
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", wheel_motor_powers.get("back_left"), wheel_motor_powers.get("back_right"));
+            telemetry.addData("Encoder ticks", "%4.2f", motors.get("front_left").getCurrentPosition()/CPR);
             telemetry.update();
         }
     }
