@@ -27,6 +27,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -58,6 +59,8 @@ public class MainTeleOp extends LinearOpMode {
     //Speed percentage for arm
     private final double arm_speed_coefficient = 0.40;
 
+    private final double actuator_speed_coefficient = 1.00;
+
     //Max wheel speed
     private final double max_wheel_speed = 0.5;
 
@@ -75,6 +78,7 @@ public class MainTeleOp extends LinearOpMode {
 
         motors.put("slide", hardwareMap.get(DcMotor.class, "slide_motor"));
         motors.put("arm", hardwareMap.get(DcMotor.class, "arm_motor"));
+        motors.put("actuator", hardwareMap.get(DcMotor.class, "actuator_motor"));
 
         //Create and assign map entries for all servos
         servos.put("slide_servo", hardwareMap.get(Servo.class, "slide_servo"));
@@ -88,6 +92,7 @@ public class MainTeleOp extends LinearOpMode {
 
         motors.get("slide").setDirection(DcMotor.Direction.REVERSE);
         motors.get("arm").setDirection(DcMotor.Direction.FORWARD);
+        motors.get("actuator").setDirection(DcMotor.Direction.FORWARD);
 
         //Set direction of servos
         servos.get("slide_servo").setDirection(Servo.Direction.FORWARD);
@@ -123,6 +128,7 @@ public class MainTeleOp extends LinearOpMode {
 
         other_motor_powers.put("slide", 0.0);
         other_motor_powers.put("arm", 0.0);
+        other_motor_powers.put("actuator", 0.0);
 
         //Settings for servos
         servo_positions.put("slide_servo", 0.0);
@@ -247,6 +253,21 @@ public class MainTeleOp extends LinearOpMode {
             //Triggers used so that the driver can move the arm slower if they want
             if (!raise_drop_macro_running) {
                 other_motor_powers.put("arm", (double) ((gamepad2.left_trigger - gamepad2.right_trigger) * arm_speed_coefficient));
+            }
+
+            //D-pad up and down used for actuator movement
+            if (gamepad2.dpad_up ^ gamepad2.dpad_down) {
+                //Move actuator up
+                if (gamepad2.dpad_up) {
+                    other_motor_powers.put("actuator", 1.00);
+                }
+                //Move it down
+                else if (gamepad2.dpad_down) {
+                    other_motor_powers.put("actuator", -1.00);
+                }
+            }
+            else {
+                other_motor_powers.put("actuator", 0.00);
             }
 
             //Send power to motors
