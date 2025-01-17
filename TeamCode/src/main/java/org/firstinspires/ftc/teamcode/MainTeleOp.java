@@ -321,7 +321,10 @@ public class MainTeleOp extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", wheel_motor_powers.get("front_left"), wheel_motor_powers.get("front_right"));
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", wheel_motor_powers.get("back_left"), wheel_motor_powers.get("back_right"));
-            telemetry.addData("Encoder ticks", "%4.2f", motors.get("front_left").getCurrentPosition()/CPR);
+            telemetry.addData("Encoder ticks (fleft)", "%4.2f", motors.get("front_left").getCurrentPosition()/CPR);
+            telemetry.addData("Encoder ticks (fright)", "%4.2f", motors.get("front_right").getCurrentPosition()/CPR);
+            telemetry.addData("Encoder ticks (bleft)", "%4.2f", motors.get("back_left").getCurrentPosition()/CPR);
+            telemetry.addData("Encoder ticks (bright)", "%4.2f", motors.get("back_right").getCurrentPosition()/CPR);
             telemetry.update();
         }
     }
