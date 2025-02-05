@@ -40,21 +40,27 @@ public class AutoMover {
     private HashMap<String, DcMotor> motors = new HashMap<>();
     //Map of wheel motor powers
     private HashMap<String, Double> motor_powers = new HashMap<>();
+    private HashMap<String, Double> motor_coeffs = new HashMap<>();
 
     //You multiply the distance you want to move (or degrees you want to rotate) by these values to get a time in seconds you have to let the engines run for
-    private final double distance_time_conv_fact = 0.00984251968;
+    private final double distance_time_conv_fact = 0.06;
     private final double rotation_time_conv_fact = 0.035;
 
     //Global speed percentage for movement
-    private final double wheel_speed_coefficient = 0.01;
+    private final double wheel_speed_coefficient = 0.25;
     //Global speed percentage for rotation
-    private final double rotation_speed_coefficient = 0.20;
+    private final double rotation_speed_coefficient = 0.25;
 
     public AutoMover(DcMotor front_left_motor, DcMotor back_left_motor, DcMotor front_right_motor, DcMotor back_right_motor) {
         motors.put("front_left", front_left_motor);
         motors.put("back_left", back_left_motor);
         motors.put("front_right", front_right_motor);
         motors.put("back_right", back_right_motor);
+
+        motor_coeffs.put("front_left", 1.0);
+        motor_coeffs.put("back_left", 1.0);
+        motor_coeffs.put("front_right", 1.045);
+        motor_coeffs.put("back_right", 1.045);
 
         //Set motor directions
         motors.get("front_left").setDirection(DcMotor.Direction.REVERSE);
@@ -81,6 +87,11 @@ public class AutoMover {
         motor_powers.put("front_right", wheel_speed_coefficient*(axial - lateral));
         motor_powers.put("back_right", wheel_speed_coefficient*(axial + lateral));
 
+        //Apply individual wheel settings
+        for (String key : motor_powers.keySet()) {
+            motor_powers.put(key, motor_powers.get(key)*motor_coeffs.get(key));
+        }
+
         //Find the maximum power being applied to a single wheel
         double max;
         max = Math.max(Math.abs(motor_powers.get("front_left")), Math.abs(motor_powers.get("front_right")));
@@ -88,9 +99,9 @@ public class AutoMover {
         max = Math.max(max, Math.abs(motor_powers.get("back_right")));
 
         //If power > 100%, scale down all the power variables.
-        if (max > 1.0) {
+        if (max > wheel_speed_coefficient) {
             double final_max = max;
-            motor_powers.replaceAll((key, val) -> val/final_max);
+            motor_powers.replaceAll((key, val) -> val/final_max*wheel_speed_coefficient);
         }
 
         //Wait until done run time expired
@@ -133,6 +144,11 @@ public class AutoMover {
             motor_powers.put("back_right", rotation_speed_coefficient);
         }
 
+        //Apply individual wheel settings
+        for (String key : motor_powers.keySet()) {
+            motor_powers.put(key, motor_powers.get(key)*motor_coeffs.get(key));
+        }
+
         //Find the maximum power being applied to a single wheel
         double max;
         max = Math.max(Math.abs(motor_powers.get("front_left")), Math.abs(motor_powers.get("front_right")));
@@ -140,9 +156,9 @@ public class AutoMover {
         max = Math.max(max, Math.abs(motor_powers.get("back_right")));
 
         //If power > 100%, scale down all the power variables.
-        if (max > 1.0) {
+        if (max > wheel_speed_coefficient) {
             double final_max = max;
-            motor_powers.replaceAll((key, val) -> val/final_max);
+            motor_powers.replaceAll((key, val) -> val/final_max*wheel_speed_coefficient);
         }
 
         //Wait until done run time expired

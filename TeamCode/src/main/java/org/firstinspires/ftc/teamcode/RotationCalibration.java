@@ -51,7 +51,7 @@ public class RotationCalibration extends LinearOpMode {
         front_right_motor = hardwareMap.get(DcMotor.class, "front_right_motor");
         back_right_motor = hardwareMap.get(DcMotor.class, "back_right_motor");
 
-        //This data is displayed on the driver hub console
+        //This data  is displayed on the driver hub console
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 

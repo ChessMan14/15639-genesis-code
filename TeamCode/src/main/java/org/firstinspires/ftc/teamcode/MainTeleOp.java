@@ -26,6 +26,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -53,11 +54,19 @@ public class MainTeleOp extends LinearOpMode {
     //Map of all servos positions
     private HashMap<String, Double> servo_positions = new HashMap<>();
 
+    //Map of all CRServos
+    private HashMap<String, CRServo> crservos = new HashMap<>();
+    //Map of all CRServo powers
+    private HashMap<String, Double> crservo_powers = new HashMap<>();
+
     //Speed percentage for slide
     private final double slide_speed_coefficient = 0.70;
 
     //Speed percentage for arm
     private final double arm_speed_coefficient = 0.40;
+
+    //Speed percentage for claw CRServo
+    private final double rotator_servo_coefficient = 0.75;
 
     private final double actuator_speed_coefficient = 1.00;
 
@@ -88,6 +97,9 @@ public class MainTeleOp extends LinearOpMode {
         servos.put("slide_servo", hardwareMap.get(Servo.class, "slide_servo"));
         servos.put("arm_servo", hardwareMap.get(Servo.class, "arm_servo"));
 
+        //Create and assign map entries for all CRServos
+        crservos.put("rotator_servo", hardwareMap.get(CRServo.class, "rotator_servo"));
+
         //Reset encoders
         for (String key : motors.keySet()) {
             motors.get(key).setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -107,6 +119,9 @@ public class MainTeleOp extends LinearOpMode {
         //Set direction of servos
         servos.get("slide_servo").setDirection(Servo.Direction.FORWARD);
         servos.get("arm_servo").setDirection(Servo.Direction.REVERSE);
+
+        //Set direction of CRServos
+        crservos.get("rotator_servo").setDirection(CRServo.Direction.FORWARD);
 
         //This data is displayhed on the driver hub console
         telemetry.addData("Status", "Initialized");
@@ -143,6 +158,9 @@ public class MainTeleOp extends LinearOpMode {
         //Settings for servos
         servo_positions.put("slide_servo", 0.0);
         servo_positions.put("arm_servo", 0.0);
+
+        //CRServos Powers
+        crservo_powers.put("rotator_servo", 0.0);
 
         //initializes variable for later
         boolean arm_servo_initialized = false;
@@ -197,20 +215,24 @@ public class MainTeleOp extends LinearOpMode {
                 wheel_motor_powers.replaceAll((key, val) -> val/final_max);
             }
 
+            //Cancel arm macro
+            if (gamepad2.dpad_right) {
+                raise_drop_macro_running = false;
+            }
             //Arm macro
             if (gamepad2.dpad_left || raise_drop_macro_running) {
-                //First cycle
+                //Raise arm
                 if (raise_drop_macro_goal < 0) {
                     raise_drop_macro_goal = runtime.seconds() + 1.5;
                     other_motor_powers.put("arm", -0.35);
                     raise_drop_macro_running = true;
                 }
-                //Arm was done raising half a second ago
+                //Drop sample
                 else if (raise_drop_macro_goal < runtime.seconds()) {
                     servo_positions.put("arm_servo", 0.25);
                     servos.get("arm_servo").setPosition(servo_positions.get("arm_servo"));
                 }
-                //Arm was done raising 0.5 second second ago
+                //Cleanup
                   if (raise_drop_macro_goal + 0.5 < runtime.seconds()) {
                     other_motor_powers.put("arm", 0.0);
                     raise_drop_macro_running = false;
@@ -290,6 +312,10 @@ public class MainTeleOp extends LinearOpMode {
                 }
             }
 
+            //Get input for rotator servo (left stick horizontal axis)
+            crservo_powers.put("rotator_servo", gamepad2.left_stick_x*rotator_servo_coefficient);
+
+
             //You can set a servo to a position from 0-1. This corresponds the servo turning to 0-180 degrees from adjacent to where the wires come out
             //If left bumper is pressed, set servo to 180 degrees. Otherwise, set it to 0
             servo_positions.put("slide_servo", gamepad2.left_bumper ? 0.15 : 0.75);
@@ -297,7 +323,7 @@ public class MainTeleOp extends LinearOpMode {
             //Pressing b once opens servo, Pressing x once closes it. Do nothing if both are pressed
             if ((gamepad2.b ^ gamepad2.x) && !raise_drop_macro_running) {
                 if (gamepad2.b) {
-                    servo_positions.put("arm_servo", 0.95);
+                    servo_positions.put("arm_servo", 0.60);
                     if (!arm_servo_initialized) {
                         arm_servo_initialized = true;
                     }
@@ -316,6 +342,10 @@ public class MainTeleOp extends LinearOpMode {
                 servos.get("arm_servo").setPosition(servo_positions.get("arm_servo"));
             }
 
+            //Set crservo powers
+            for (String key : crservos.keySet()) {
+                crservos.get(key).setPower(crservo_powers.get(key));
+            }
 
             //Display data on driver hub
             telemetry.addData("Status", "Run Time: " + runtime.toString());
