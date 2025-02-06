@@ -63,7 +63,7 @@ public class MainTeleOp extends LinearOpMode {
     private final double slide_speed_coefficient = 0.70;
 
     //Speed percentage for arm
-    private final double arm_speed_coefficient = 0.40;
+    private final double arm_speed_coefficient = 0.10;
 
     //Speed percentage for claw CRServo
     private final double rotator_servo_coefficient = 0.75;
