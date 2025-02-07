@@ -28,7 +28,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -284,18 +283,18 @@ public class MainTeleOp extends LinearOpMode {
 
             //Triggers used so that the driver can move the arm slower if they want
             if (!raise_drop_macro_running) {
-                other_motor_powers.put("arm", (double) ((gamepad2.left_trigger - gamepad2.right_trigger) * arm_speed_coefficient));
+                other_motor_powers.put("arm", (double)((gamepad2.left_trigger - gamepad2.right_trigger) * arm_speed_coefficient));
             }
 
             //D-pad up and down used for actuator movement
             if (gamepad2.dpad_up ^ gamepad2.dpad_down) {
                 //Move actuator up
                 if (gamepad2.dpad_up) {
-                    other_motor_powers.put("actuator", 1.00);
+                    other_motor_powers.put("actuator", actuator_speed_coefficient);
                 }
                 //Move it down
                 else if (gamepad2.dpad_down) {
-                    other_motor_powers.put("actuator", -1.00);
+                    other_motor_powers.put("actuator", -actuator_speed_coefficient);
                 }
             }
             else {
