@@ -37,7 +37,6 @@ import java.util.HashMap;
 @TeleOp(name="Main TeleOp", group="Linear OpMode")
 //Since java is weird, this is essentially the equivalent of a main method in C, but instead it's a class. Also, we "extend" this class from the library class LinearOpMode which makes this into a proper teleop opmode
 public class MainTeleOp extends LinearOpMode {
-
     //Create the variables for the motors and servos and initializes a variable that keeps track of how long the opmode has been running
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -54,7 +53,7 @@ public class MainTeleOp extends LinearOpMode {
     private HashMap<String, Double> servo_positions = new HashMap<>();
 
     //Map of all CRServos
-    private HashMap<String, CRServo> crservos = new HashMap<>();
+    private HashMap<String, CustomCRServo> crservos = new HashMap<>();
     //Map of all CRServo powers
     private HashMap<String, Double> crservo_powers = new HashMap<>();
 
@@ -97,7 +96,7 @@ public class MainTeleOp extends LinearOpMode {
         servos.put("arm_servo", hardwareMap.get(Servo.class, "arm_servo"));
 
         //Create and assign map entries for all CRServos
-        crservos.put("rotator_servo", hardwareMap.get(CRServo.class, "rotator_servo"));
+        crservos.put("rotator_servo", new CustomCRServo(hardwareMap.get(Servo.class, "rotator_servo")));
 
         //Reset encoders
         for (String key : motors.keySet()) {
@@ -120,7 +119,7 @@ public class MainTeleOp extends LinearOpMode {
         servos.get("arm_servo").setDirection(Servo.Direction.REVERSE);
 
         //Set direction of CRServos
-        crservos.get("rotator_servo").setDirection(CRServo.Direction.FORWARD);
+        crservos.get("rotator_servo").base_servo.setDirection(Servo.Direction.FORWARD);
 
         //This data is displayhed on the driver hub console
         telemetry.addData("Status", "Initialized");
@@ -344,6 +343,7 @@ public class MainTeleOp extends LinearOpMode {
             //Set crservo powers
             for (String key : crservos.keySet()) {
                 crservos.get(key).setPower(crservo_powers.get(key));
+                crservos.get(key).update();
             }
 
             //Display data on driver hub

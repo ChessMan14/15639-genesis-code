@@ -39,7 +39,7 @@ public class ForwardCalibration extends LinearOpMode {
     private DcMotor back_right_motor = null;
 
     //How far the robot is going to try to move. Adjust this when trying to make the movement fit in the measuring tape
-    public final double movement_distance = 75;
+    public final double movement_distance = 20;
 
     //We have to override this function since it has already been defined in the parent class LinearOpMode
     @Override
