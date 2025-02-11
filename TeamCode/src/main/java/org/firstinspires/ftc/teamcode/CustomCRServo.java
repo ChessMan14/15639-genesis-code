@@ -43,6 +43,9 @@ public class CustomCRServo {
     //Last position the servo was set to
     double last_pos = -1;
 
+    //Current pos
+    double new_pos;
+
     //Elapsed time when the position was lat updated
     double last_time = 0;
 
@@ -76,7 +79,9 @@ public class CustomCRServo {
             current_power = power;
         }
 
-        last_time = runtime.seconds();
+        if (runtime.seconds() > (last_time + 0.1)) {
+            last_time = runtime.seconds();
+        }
     }
 
     //Update servo position according to power
@@ -84,7 +89,7 @@ public class CustomCRServo {
     public void update() {
         //Enough time has passed, update pos
         if (runtime.seconds() > (last_time + 0.1)) {
-            double new_pos = last_pos + current_power*power_coeff;
+            new_pos = last_pos + current_power*power_coeff;
 
             //Make sure new_pos is within limits
             if ((new_pos >= min_pos) && (new_pos <= max_pos)) {
