@@ -342,8 +342,8 @@ public class MainTeleOp extends LinearOpMode {
 
             //Set crservo powers
             for (String key : crservos.keySet()) {
-                crservos.get(key).setPower(crservo_powers.get(key));
                 crservos.get(key).update();
+                crservos.get(key).setPower(crservo_powers.get(key));
             }
 
             //Display data on driver hub
@@ -355,6 +355,7 @@ public class MainTeleOp extends LinearOpMode {
             telemetry.addData("Encoder ticks (bleft)", "%4.2f", motors.get("back_left").getCurrentPosition()/CPR);
             telemetry.addData("Encoder ticks (bright)", "%4.2f", motors.get("back_right").getCurrentPosition()/CPR);
             telemetry.addData("Rotator Servo Last Pos", "%4.2f", crservos.get("rotator_servo").last_pos);
+            telemetry.addData("Rotator Servo New Pos", "%4.2f", crservos.get("rotator_servo").new_pos);
             telemetry.addData("Rotator Servo Last Time", "%4.2f", crservos.get("rotator_servo").last_time);
             telemetry.addData("Rotator Servo Current Power", "%4.2f", crservos.get("rotator_servo").current_power);
             telemetry.addData("Rotator Servo Time", "%4.2f", crservos.get("rotator_servo").runtime.seconds());
