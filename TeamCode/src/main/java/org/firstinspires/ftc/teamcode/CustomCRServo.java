@@ -94,7 +94,7 @@ public class CustomCRServo {
             //Make sure new_pos is within limits
             if ((new_pos >= min_pos) && (new_pos <= max_pos)) {
                 last_pos = new_pos;
-                base_servo.setPosition(1);
+                base_servo.setPosition(new_pos);
                 last_time = runtime.seconds();
             }
         }
