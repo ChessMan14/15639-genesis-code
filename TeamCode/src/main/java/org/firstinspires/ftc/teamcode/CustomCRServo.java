@@ -34,7 +34,7 @@ public class CustomCRServo {
     ElapsedTime runtime = new ElapsedTime();
 
     //Constant coefficient for power to degrees per second
-    double power_coeff = 1.0;
+    double power_coeff = 0.2;
 
     //Max and min positions the servo can be in
     double max_pos = 1.0;
@@ -92,11 +92,17 @@ public class CustomCRServo {
             new_pos = last_pos + current_power*power_coeff;
 
             //Make sure new_pos is within limits
-            if ((new_pos >= min_pos) && (new_pos <= max_pos)) {
+            if ((new_pos > min_pos) && (new_pos < max_pos)) {
                 last_pos = new_pos;
-                base_servo.setPosition(new_pos);
-                last_time = runtime.seconds();
             }
+            else if (new_pos < min_pos) {
+                last_pos = min_pos;
+            }
+            else {
+                last_pos = max_pos;
+            }
+            base_servo.setPosition(new_pos);
+            last_time = runtime.seconds();
         }
     }
 }
