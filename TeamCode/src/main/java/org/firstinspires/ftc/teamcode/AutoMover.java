@@ -43,8 +43,8 @@ public class AutoMover {
     private HashMap<String, Double> motor_coeffs = new HashMap<>();
 
     //You multiply the distance you want to move (or degrees you want to rotate) by these values to get a time in seconds you have to let the engines run for
-    private final double distance_time_conv_fact = 0.06;
-    private final double rotation_time_conv_fact = 0.035;
+    private final double distance_time_conv_fact = 0.035;
+    private final double rotation_time_conv_fact = 0.024;
 
     //Global speed percentage for movement
     private final double wheel_speed_coefficient = 0.25;
