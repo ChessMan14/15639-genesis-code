@@ -35,7 +35,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.HashMap;
 
-//TODO FIX THE ARM FUCKERY
+//TODO FIX THE ROBOT FUCKERY
 //This decorator puts this opmode into selected the name and group on the driver hub menu
 @TeleOp(name="Main TeleOp", group="Linear OpMode")
 //Since java is weird, this is essentially the equivalent of a main method in C, but instead it's a class. Also, we "extend" this class from the library class LinearOpMode which makes this into a proper teleop opmode
